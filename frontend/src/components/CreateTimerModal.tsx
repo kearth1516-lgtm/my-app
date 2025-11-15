@@ -161,18 +161,6 @@ const CreateTimerModal: React.FC<CreateTimerModalProps> = ({ isOpen, onClose, on
             {uploading && <small>アップロード中...</small>}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="image-url">画像URL（またはファイルを選択）</label>
-            <input
-              id="image-url"
-              type="text"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="/images/mogu.jpg"
-            />
-            <small>推しの画像URLを入力してください</small>
-          </div>
-
           <div className="preview-section">
             <label>プレビュー</label>
             <img 

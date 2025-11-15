@@ -4,6 +4,7 @@ import { timerService } from '../services';
 import type { Timer } from '../types';
 import CreateTimerModal from '../components/CreateTimerModal';
 import ConfirmModal from '../components/ConfirmModal';
+import TimerRunning from '../components/TimerRunning';
 import './Timers.css';
 
 function Timers() {
@@ -11,6 +12,7 @@ function Timers() {
   const [timers, setTimers] = useState<Timer[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTimer, setActiveTimer] = useState<string | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
   const [remainingTime, setRemainingTime] = useState<{ [key: string]: number }>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; timerId: string | null; timerName: string }>({ 
@@ -24,6 +26,8 @@ function Timers() {
   }, []);
 
   useEffect(() => {
+    if (isPaused) return;
+
     const interval = setInterval(() => {
       setRemainingTime((prev) => {
         const updated = { ...prev };
@@ -40,7 +44,7 @@ function Timers() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [activeTimer]);
+  }, [activeTimer, isPaused]);
 
   const loadTimers = async () => {
     try {
@@ -70,6 +74,7 @@ function Timers() {
     try {
       await timerService.stop(timerId);
       setActiveTimer(null);
+      setIsPaused(false);
       setRemainingTime((prev) => {
         const updated = { ...prev };
         delete updated[timerId];
@@ -79,6 +84,10 @@ function Timers() {
     } catch (error) {
       console.error('タイマーの停止に失敗しました:', error);
     }
+  };
+
+  const handlePauseTimer = () => {
+    setIsPaused(!isPaused);
   };
 
   const handleTimerComplete = () => {
@@ -130,6 +139,18 @@ function Timers() {
 
   return (
     <div className="timers-container">
+      {activeTimer && (() => {
+        const runningTimer = timers.find(t => t.id === activeTimer);
+        return runningTimer ? (
+          <TimerRunning
+            timer={runningTimer}
+            onPause={handlePauseTimer}
+            onStop={() => handleStopTimer(activeTimer)}
+            remainingSeconds={remainingTime[activeTimer] || 0}
+          />
+        ) : null;
+      })()}
+
       <header className="timers-header">
         <h1>⏱️ タイマー</h1>
         <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
