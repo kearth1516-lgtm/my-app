@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { timerService } from '../services';
 import type { Timer } from '../types';
 import CreateTimerModal from '../components/CreateTimerModal';
 import './Timers.css';
 
 function Timers() {
+  const navigate = useNavigate();
   const [timers, setTimers] = useState<Timer[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTimer, setActiveTimer] = useState<string | null>(null);
@@ -89,6 +91,20 @@ function Timers() {
     }
   };
 
+  const handleDeleteTimer = async (timerId: string) => {
+    if (!confirm('このタイマーを削除しますか？')) {
+      return;
+    }
+    
+    try {
+      await timerService.delete(timerId);
+      await loadTimers();
+    } catch (error) {
+      console.error('タイマーの削除に失敗しました:', error);
+      alert('タイマーの削除に失敗しました。実行中のタイマーは削除できません。');
+    }
+  };
+
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -120,13 +136,26 @@ function Timers() {
         <div className="timers-grid">
           {timers.map((timer) => (
             <div key={timer.id} className="timer-card">
+              <button 
+                className="delete-timer-btn"
+                onClick={() => timer.id && handleDeleteTimer(timer.id)}
+                title="削除"
+              >
+                ×
+              </button>
               {timer.imageUrl && (
                 <div className="timer-image">
                   <img src={timer.imageUrl} alt={timer.name} />
                 </div>
               )}
               <div className="timer-content">
-                <h3>{timer.name}</h3>
+                <h3 
+                  onClick={() => timer.id && navigate(`/timers/${timer.id}`)}
+                  style={{ cursor: 'pointer' }}
+                  title="詳細を見る"
+                >
+                  {timer.name}
+                </h3>
                 <div className="timer-display">
                   {activeTimer === timer.id && timer.id
                     ? formatTime(remainingTime[timer.id] || 0)

@@ -13,6 +13,41 @@ const CreateTimerModal: React.FC<CreateTimerModalProps> = ({ isOpen, onClose, on
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [imageUrl, setImageUrl] = useState('/images/mogu.jpg');
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // ファイルサイズチェック (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('ファイルサイズが大きすぎます。最大5MBまでです。');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('http://localhost:8000/api/upload/image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('アップロードに失敗しました');
+      }
+
+      const data = await response.json();
+      setImageUrl(`http://localhost:8000${data.url}`);
+    } catch (error) {
+      console.error('画像アップロードエラー:', error);
+      alert('画像のアップロードに失敗しました');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,7 +151,18 @@ const CreateTimerModal: React.FC<CreateTimerModalProps> = ({ isOpen, onClose, on
           </div>
 
           <div className="form-group">
-            <label htmlFor="image-url">画像URL</label>
+            <label>画像選択</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              disabled={uploading}
+            />
+            {uploading && <small>アップロード中...</small>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="image-url">画像URL（またはファイルを選択）</label>
             <input
               id="image-url"
               type="text"

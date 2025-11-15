@@ -17,6 +17,7 @@ export const timerService = {
   create: (data: { name: string; duration: number; imageUrl: string }) => api.post<Timer>('/timers', data),
   start: (id: string) => api.post(`/timers/${id}/start`),
   stop: (id: string) => api.post(`/timers/${id}/stop`),
+  delete: (id: string) => api.delete(`/timers/${id}`),
   getRecords: (id: string) => api.get(`/timers/${id}/records`),
 };
 

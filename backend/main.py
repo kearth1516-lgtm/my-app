@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
+import os
 
 # ルーター
-from routers import auth, recipes, timers, fashion, home
+from routers import auth, recipes, timers, fashion, home, upload
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -39,6 +41,14 @@ app.include_router(recipes.router, prefix="/api/recipes", tags=["recipes"])
 app.include_router(timers.router, prefix="/api/timers", tags=["timers"])
 app.include_router(fashion.router, prefix="/api/fashion", tags=["fashion"])
 app.include_router(home.router, prefix="/api/home", tags=["home"])
+app.include_router(upload.router, prefix="/api/upload", tags=["upload"])
+
+# 画像保存用ディレクトリ
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# 静的ファイル配信
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 @app.get("/")
 async def root():

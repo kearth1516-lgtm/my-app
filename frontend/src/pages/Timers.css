@@ -60,10 +60,36 @@
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s;
+  position: relative;
 }
 
 .timer-card:hover {
   transform: translateY(-5px);
+}
+
+.delete-timer-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  background: rgba(244, 67, 54, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.delete-timer-btn:hover {
+  background: rgba(244, 67, 54, 1);
+  transform: scale(1.1);
 }
 
 .timer-image {
