@@ -15,6 +15,7 @@ function Home() {
     try {
       setLoading(true);
       const response = await homeService.getRandomImage();
+      console.log('API Response:', response.data);
       setImage(response.data);
     } catch (error) {
       console.error('画像の取得に失敗しました:', error);
@@ -33,7 +34,7 @@ function Home() {
       <div className="home-image-container">
         {loading ? (
           <div className="loading">読み込み中...</div>
-        ) : image ? (
+        ) : image && image.imageUrl ? (
           <div className="image-card">
             <img src={image.imageUrl} alt={image.caption || '推し写真'} />
             {image.caption && <p className="image-caption">{image.caption}</p>}
