@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { homeService } from '../services';
-import { HomeImage } from '../types';
+import type { HomeImage } from '../types';
 import './Home.css';
 
 function Home() {
