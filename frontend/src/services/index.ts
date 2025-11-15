@@ -14,7 +14,7 @@ export const recipeService = {
 // タイマーAPI
 export const timerService = {
   getAll: () => api.get<Timer[]>('/timers'),
-  create: (data: { name: string; duration: number; imageUrl: string }) => api.post<Timer>('/timers', data),
+  create: (data: { name: string; duration: number; imageUrl: string; type?: 'countdown' | 'stopwatch' }) => api.post<Timer>('/timers', data),
   start: (id: string) => api.post(`/timers/${id}/start`),
   stop: (id: string) => api.post(`/timers/${id}/stop`),
   delete: (id: string) => api.delete(`/timers/${id}`),

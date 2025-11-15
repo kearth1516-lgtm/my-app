@@ -107,6 +107,29 @@
   transition: border-color 0.2s, background-color 0.2s;
 }
 
+.timer-type-select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+  transition: border-color 0.2s, background-color 0.2s;
+  cursor: pointer;
+}
+
+.timer-type-select option {
+  background-color: #667eea;
+  color: white;
+}
+
+.timer-type-select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
 .form-group input[type="text"]:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.6);

@@ -4,11 +4,12 @@ import './CreateTimerModal.css';
 interface CreateTimerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (timer: { name: string; duration: number; imageUrl: string }) => void;
+  onSubmit: (timer: { name: string; duration: number; imageUrl: string; type: 'countdown' | 'stopwatch' }) => void;
 }
 
 const CreateTimerModal: React.FC<CreateTimerModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [name, setName] = useState('');
+  const [type, setType] = useState<'countdown' | 'stopwatch'>('countdown');
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
@@ -59,19 +60,22 @@ const CreateTimerModal: React.FC<CreateTimerModalProps> = ({ isOpen, onClose, on
       return;
     }
     
-    if (duration <= 0) {
+    // ストップウォッチは時間設定不要
+    if (type === 'countdown' && duration <= 0) {
       alert('時間を設定してください');
       return;
     }
     
     onSubmit({
       name: name.trim(),
-      duration,
-      imageUrl: imageUrl.trim() || '/images/mogu.jpg'
+      duration: type === 'stopwatch' ? 0 : duration,
+      imageUrl: imageUrl.trim() || '/images/mogu.jpg',
+      type
     });
     
     // リセット
     setName('');
+    setType('countdown');
     setHours(0);
     setMinutes(0);
     setSeconds(0);
@@ -82,6 +86,7 @@ const CreateTimerModal: React.FC<CreateTimerModalProps> = ({ isOpen, onClose, on
   const handleCancel = () => {
     // リセット
     setName('');
+    setType('countdown');
     setHours(0);
     setMinutes(0);
     setSeconds(0);
@@ -115,40 +120,55 @@ const CreateTimerModal: React.FC<CreateTimerModalProps> = ({ isOpen, onClose, on
           </div>
 
           <div className="form-group">
-            <label>時間設定</label>
-            <div className="time-inputs">
-              <div className="time-input-group">
-                <input
-                  type="number"
-                  value={hours}
-                  onChange={(e) => setHours(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))}
-                  min="0"
-                  max="23"
-                />
-                <span>時間</span>
-              </div>
-              <div className="time-input-group">
-                <input
-                  type="number"
-                  value={minutes}
-                  onChange={(e) => setMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                  min="0"
-                  max="59"
-                />
-                <span>分</span>
-              </div>
-              <div className="time-input-group">
-                <input
-                  type="number"
-                  value={seconds}
-                  onChange={(e) => setSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                  min="0"
-                  max="59"
-                />
-                <span>秒</span>
+            <label htmlFor="timer-type">タイプ</label>
+            <select
+              id="timer-type"
+              value={type}
+              onChange={(e) => setType(e.target.value as 'countdown' | 'stopwatch')}
+              className="timer-type-select"
+            >
+              <option value="countdown">カウントダウン（設定時間から減算）</option>
+              <option value="stopwatch">ストップウォッチ（0から計測）</option>
+            </select>
+          </div>
+
+          {type === 'countdown' && (
+            <div className="form-group">
+              <label>時間設定</label>
+              <div className="time-inputs">
+                <div className="time-input-group">
+                  <input
+                    type="number"
+                    value={hours}
+                    onChange={(e) => setHours(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))}
+                    min="0"
+                    max="23"
+                  />
+                  <span>時間</span>
+                </div>
+                <div className="time-input-group">
+                  <input
+                    type="number"
+                    value={minutes}
+                    onChange={(e) => setMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                    min="0"
+                    max="59"
+                  />
+                  <span>分</span>
+                </div>
+                <div className="time-input-group">
+                  <input
+                    type="number"
+                    value={seconds}
+                    onChange={(e) => setSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                    min="0"
+                    max="59"
+                  />
+                  <span>秒</span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="form-group">
             <label>画像選択</label>

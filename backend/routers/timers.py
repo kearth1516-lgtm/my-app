@@ -15,11 +15,13 @@ class Timer(BaseModel):
     duration: int  # 秒単位
     imageUrl: Optional[str] = None
     records: List[TimerRecord] = []
+    type: Optional[str] = "countdown"  # "countdown" or "stopwatch"
 
 class TimerCreate(BaseModel):
     name: str
     duration: int
     imageUrl: Optional[str] = None
+    type: Optional[str] = "countdown"
 
 # インメモリストレージ（実装用）
 timers_storage: List[dict] = [
@@ -28,17 +30,27 @@ timers_storage: List[dict] = [
         "name": "勉強タイマー",
         "duration": 3600,  # 1時間
         "imageUrl": "/images/mogu.jpg",
-        "records": []
+        "records": [],
+        "type": "countdown"
     },
     {
         "id": "timer-002",
         "name": "休憩タイマー",
         "duration": 300,  # 5分
         "imageUrl": "/images/mogu.jpg",
-        "records": []
+        "records": [],
+        "type": "countdown"
+    },
+    {
+        "id": "timer-003",
+        "name": "作業記録",
+        "duration": 0,  # ストップウォッチは初期値0
+        "imageUrl": "/images/mogu.jpg",
+        "records": [],
+        "type": "stopwatch"
     }
 ]
-next_timer_id = 3
+next_timer_id = 4
 # アクティブなタイマーの開始時刻を保存
 active_timers: dict = {}
 
@@ -57,7 +69,8 @@ async def create_timer(timer: TimerCreate):
         "name": timer.name,
         "duration": timer.duration,
         "imageUrl": timer.imageUrl or "/images/mogu.jpg",
-        "records": []
+        "records": [],
+        "type": timer.type or "countdown"
     }
     
     timers_storage.append(new_timer)

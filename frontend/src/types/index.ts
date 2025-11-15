@@ -17,6 +17,7 @@ export interface Timer {
   duration: number;
   imageUrl?: string;
   records: TimerRecord[];
+  type?: 'countdown' | 'stopwatch'; // カウントダウンまたはストップウォッチ
 }
 
 export interface TimerRecord {

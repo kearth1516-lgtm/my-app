@@ -32,11 +32,20 @@ function Timers() {
       setRemainingTime((prev) => {
         const updated = { ...prev };
         Object.keys(updated).forEach((id) => {
-          if (updated[id] > 0) {
-            updated[id] -= 1;
-          } else if (updated[id] === 0 && activeTimer === id) {
-            // タイマー終了
-            handleTimerComplete();
+          const timer = timers.find(t => t.id === id);
+          if (!timer) return;
+
+          if (timer.type === 'stopwatch') {
+            // ストップウォッチはカウントアップ
+            updated[id] += 1;
+          } else {
+            // カウントダウン
+            if (updated[id] > 0) {
+              updated[id] -= 1;
+            } else if (updated[id] === 0 && activeTimer === id) {
+              // タイマー終了
+              handleTimerComplete();
+            }
           }
         });
         return updated;
@@ -44,7 +53,7 @@ function Timers() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [activeTimer, isPaused]);
+  }, [activeTimer, isPaused, timers]);
 
   const loadTimers = async () => {
     try {
@@ -63,7 +72,9 @@ function Timers() {
       if (timer.id) {
         await timerService.start(timer.id);
         setActiveTimer(timer.id);
-        setRemainingTime((prev) => ({ ...prev, [timer.id!]: timer.duration }));
+        // ストップウォッチは0から、カウントダウンは設定時間から
+        const initialTime = timer.type === 'stopwatch' ? 0 : timer.duration;
+        setRemainingTime((prev) => ({ ...prev, [timer.id!]: initialTime }));
       }
     } catch (error) {
       console.error('タイマーの開始に失敗しました:', error);
@@ -96,7 +107,7 @@ function Timers() {
     loadTimers();
   };
 
-  const handleCreateTimer = async (timerData: { name: string; duration: number; imageUrl: string }) => {
+  const handleCreateTimer = async (timerData: { name: string; duration: number; imageUrl: string; type: 'countdown' | 'stopwatch' }) => {
     try {
       await timerService.create(timerData);
       await loadTimers();
@@ -184,17 +195,22 @@ function Timers() {
                 </div>
               )}
               <div className="timer-content">
-                <h3 
-                  onClick={() => timer.id && navigate(`/timers/${timer.id}`)}
-                  style={{ cursor: 'pointer' }}
-                  title="詳細を見る"
-                >
-                  {timer.name}
-                </h3>
+                <div className="timer-header">
+                  <h3 
+                    onClick={() => timer.id && navigate(`/timers/${timer.id}`)}
+                    style={{ cursor: 'pointer' }}
+                    title="詳細を見る"
+                  >
+                    {timer.name}
+                  </h3>
+                  <span className={`timer-type-badge ${timer.type || 'countdown'}`}>
+                    {timer.type === 'stopwatch' ? 'ストップウォッチ' : 'カウントダウン'}
+                  </span>
+                </div>
                 <div className="timer-display">
                   {activeTimer === timer.id && timer.id
                     ? formatTime(remainingTime[timer.id] || 0)
-                    : formatTime(timer.duration)}
+                    : timer.type === 'stopwatch' ? '00:00:00' : formatTime(timer.duration)}
                 </div>
                 <div className="timer-actions">
                   {activeTimer === timer.id ? (

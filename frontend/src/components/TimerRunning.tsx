@@ -27,6 +27,10 @@ const TimerRunning: React.FC<TimerRunningProps> = ({
   };
 
   const getProgress = (): number => {
+    if (timer.type === 'stopwatch') {
+      // ストップウォッチは進捗表示なし（常に0）
+      return 0;
+    }
     return ((timer.duration - remainingSeconds) / timer.duration) * 100;
   };
 
@@ -91,8 +95,14 @@ const TimerRunning: React.FC<TimerRunningProps> = ({
         </div>
 
         <div className="timer-running-info">
-          <p>設定時間: {formatTime(timer.duration)}</p>
-          <p>経過: {formatTime(timer.duration - remainingSeconds)}</p>
+          {timer.type === 'countdown' ? (
+            <>
+              <p>設定時間: {formatTime(timer.duration)}</p>
+              <p>経過: {formatTime(timer.duration - remainingSeconds)}</p>
+            </>
+          ) : (
+            <p>経過時間: {formatTime(remainingSeconds)}</p>
+          )}
         </div>
       </div>
     </div>
