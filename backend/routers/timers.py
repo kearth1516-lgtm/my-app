@@ -19,8 +19,23 @@ class Timer(BaseModel):
 @router.get("/")
 async def get_timers():
     """タイマー一覧取得"""
-    # TODO: 実装
-    return []
+    # TODO: 実装（データベースから取得）
+    return [
+        {
+            "id": "timer-001",
+            "name": "勉強タイマー",
+            "duration": 3600,  # 1時間
+            "imageUrl": "/images/mogu.jpg",
+            "records": []
+        },
+        {
+            "id": "timer-002",
+            "name": "休憩タイマー",
+            "duration": 300,  # 5分
+            "imageUrl": "/images/mogu.jpg",
+            "records": []
+        }
+    ]
 
 @router.post("/")
 async def create_timer(timer: Timer):
