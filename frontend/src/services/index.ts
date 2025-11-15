@@ -1,5 +1,5 @@
 import api from './api';
-import { Recipe, Timer, FashionItem, DailyOutfit, HomeImage } from '../types';
+import type { Recipe, Timer, FashionItem, DailyOutfit, HomeImage } from '../types';
 
 // レシピAPI
 export const recipeService = {

@@ -16,8 +16,8 @@ async def get_random_image():
     # TODO: 実装（データベースからランダムに取得）
     return {
         "id": "img-001",
-        "imageUrl": "https://example.com/image.jpg",
-        "caption": "推し写真"
+        "imageUrl": "/images/mogu.jpg",
+        "caption": "推し"
     }
 
 @router.post("/images")
