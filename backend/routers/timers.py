@@ -16,32 +16,52 @@ class Timer(BaseModel):
     imageUrl: Optional[str] = None
     records: List[TimerRecord] = []
 
+class TimerCreate(BaseModel):
+    name: str
+    duration: int
+    imageUrl: Optional[str] = None
+
+# インメモリストレージ（実装用）
+timers_storage: List[dict] = [
+    {
+        "id": "timer-001",
+        "name": "勉強タイマー",
+        "duration": 3600,  # 1時間
+        "imageUrl": "/images/mogu.jpg",
+        "records": []
+    },
+    {
+        "id": "timer-002",
+        "name": "休憩タイマー",
+        "duration": 300,  # 5分
+        "imageUrl": "/images/mogu.jpg",
+        "records": []
+    }
+]
+next_timer_id = 3
+
 @router.get("/")
 async def get_timers():
     """タイマー一覧取得"""
-    # TODO: 実装（データベースから取得）
-    return [
-        {
-            "id": "timer-001",
-            "name": "勉強タイマー",
-            "duration": 3600,  # 1時間
-            "imageUrl": "/images/mogu.jpg",
-            "records": []
-        },
-        {
-            "id": "timer-002",
-            "name": "休憩タイマー",
-            "duration": 300,  # 5分
-            "imageUrl": "/images/mogu.jpg",
-            "records": []
-        }
-    ]
+    return timers_storage
 
 @router.post("/")
-async def create_timer(timer: Timer):
+async def create_timer(timer: TimerCreate):
     """タイマー作成"""
-    # TODO: 実装
-    return {"id": "timer-001", **timer.dict()}
+    global next_timer_id
+    
+    new_timer = {
+        "id": f"timer-{str(next_timer_id).zfill(3)}",
+        "name": timer.name,
+        "duration": timer.duration,
+        "imageUrl": timer.imageUrl or "/images/mogu.jpg",
+        "records": []
+    }
+    
+    timers_storage.append(new_timer)
+    next_timer_id += 1
+    
+    return new_timer
 
 @router.post("/{timer_id}/start")
 async def start_timer(timer_id: str):

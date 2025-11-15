@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { timerService } from '../services';
 import type { Timer } from '../types';
+import CreateTimerModal from '../components/CreateTimerModal';
 import './Timers.css';
 
 function Timers() {
@@ -8,6 +9,7 @@ function Timers() {
   const [loading, setLoading] = useState(true);
   const [activeTimer, setActiveTimer] = useState<string | null>(null);
   const [remainingTime, setRemainingTime] = useState<{ [key: string]: number }>({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     loadTimers();
@@ -22,7 +24,7 @@ function Timers() {
             updated[id] -= 1;
           } else if (updated[id] === 0 && activeTimer === id) {
             // タイマー終了
-            handleTimerComplete(id);
+            handleTimerComplete();
           }
         });
         return updated;
@@ -71,10 +73,20 @@ function Timers() {
     }
   };
 
-  const handleTimerComplete = (timerId: string) => {
+  const handleTimerComplete = () => {
     alert('⏰ タイマー終了！お疲れ様でした！');
     setActiveTimer(null);
     loadTimers();
+  };
+
+  const handleCreateTimer = async (timerData: { name: string; duration: number; imageUrl: string }) => {
+    try {
+      await timerService.create(timerData);
+      await loadTimers();
+    } catch (error) {
+      console.error('タイマーの作成に失敗しました:', error);
+      alert('タイマーの作成に失敗しました');
+    }
   };
 
   const formatTime = (seconds: number): string => {
@@ -90,7 +102,7 @@ function Timers() {
     <div className="timers-container">
       <header className="timers-header">
         <h1>⏱️ タイマー</h1>
-        <button className="btn-primary" onClick={() => alert('タイマー作成機能は準備中です')}>
+        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
           ＋ 新規作成
         </button>
       </header>
@@ -100,7 +112,7 @@ function Timers() {
       ) : timers.length === 0 ? (
         <div className="empty-state">
           <p>タイマーがありません</p>
-          <button className="btn-primary" onClick={() => alert('タイマー作成機能は準備中です')}>
+          <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
             最初のタイマーを作成
           </button>
         </div>
@@ -148,6 +160,12 @@ function Timers() {
           🏠 ホーム
         </a>
       </nav>
+
+      <CreateTimerModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleCreateTimer}
+      />
     </div>
   );
 }
