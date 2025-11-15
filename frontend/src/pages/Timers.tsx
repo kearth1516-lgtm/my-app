@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { timerService } from '../services';
 import type { Timer } from '../types';
 import CreateTimerModal from '../components/CreateTimerModal';
+import ConfirmModal from '../components/ConfirmModal';
 import './Timers.css';
 
 function Timers() {
@@ -12,6 +13,11 @@ function Timers() {
   const [activeTimer, setActiveTimer] = useState<string | null>(null);
   const [remainingTime, setRemainingTime] = useState<{ [key: string]: number }>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; timerId: string | null; timerName: string }>({ 
+    isOpen: false, 
+    timerId: null, 
+    timerName: '' 
+  });
 
   useEffect(() => {
     loadTimers();
@@ -91,18 +97,26 @@ function Timers() {
     }
   };
 
-  const handleDeleteTimer = async (timerId: string) => {
-    if (!confirm('このタイマーを削除しますか？')) {
-      return;
-    }
+  const handleDeleteTimer = (timerId: string, timerName: string) => {
+    setDeleteConfirm({ isOpen: true, timerId, timerName });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm.timerId) return;
     
     try {
-      await timerService.delete(timerId);
+      await timerService.delete(deleteConfirm.timerId);
       await loadTimers();
+      setDeleteConfirm({ isOpen: false, timerId: null, timerName: '' });
     } catch (error) {
       console.error('タイマーの削除に失敗しました:', error);
       alert('タイマーの削除に失敗しました。実行中のタイマーは削除できません。');
+      setDeleteConfirm({ isOpen: false, timerId: null, timerName: '' });
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm({ isOpen: false, timerId: null, timerName: '' });
   };
 
   const formatTime = (seconds: number): string => {
@@ -138,7 +152,7 @@ function Timers() {
             <div key={timer.id} className="timer-card">
               <button 
                 className="delete-timer-btn"
-                onClick={() => timer.id && handleDeleteTimer(timer.id)}
+                onClick={() => timer.id && handleDeleteTimer(timer.id, timer.name)}
                 title="削除"
               >
                 ×
@@ -194,6 +208,17 @@ function Timers() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateTimer}
+      />
+
+      <ConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        title="タイマーを削除"
+        message={`「${deleteConfirm.timerName}」を削除してもよろしいですか？この操作は取り消せません。`}
+        confirmText="削除"
+        cancelText="キャンセル"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        isDangerous={true}
       />
     </div>
   );
