@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Timers from './pages/Timers';
 import Records from './pages/Records';
+import Recipes from './pages/Recipes';
 import Settings from './pages/Settings';
 import { settingsService } from './services';
 import './App.css';
@@ -141,8 +142,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/timers" element={<Timers />} />
         <Route path="/records" element={<Records />} />
+        <Route path="/recipes" element={<Recipes />} />
         <Route path="/settings" element={<Settings />} />
-        <Route path="/recipes" element={<div style={{ padding: '20px', textAlign: 'center' }}>レシピページ（準備中）</div>} />
         <Route path="/fashion" element={<div style={{ padding: '20px', textAlign: 'center' }}>ファッションページ（準備中）</div>} />
       </Routes>
     </Router>
