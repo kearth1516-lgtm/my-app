@@ -6,6 +6,7 @@ import RecordsGraph from '../components/RecordsGraph';
 import ManualRecordModal from '../components/ManualRecordModal';
 import RecordDetailModal from '../components/RecordDetailModal';
 import EditRecordModal from '../components/EditRecordModal';
+import ReportsView from '../components/ReportsView';
 import './Records.css';
 
 function Records() {
@@ -14,7 +15,7 @@ function Records() {
   const [timers, setTimers] = useState<Timer[]>([]);
   const [allTags, setAllTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'list' | 'graph'>('graph');
+  const [activeTab, setActiveTab] = useState<'list' | 'graph' | 'reports'>('graph');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [summary, setSummary] = useState<any>(null);
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
@@ -220,16 +221,22 @@ function Records() {
 
         <div className="records-tabs">
           <button
+            className={activeTab === 'graph' ? 'active' : ''}
+            onClick={() => setActiveTab('graph')}
+          >
+            📈 グラフ
+          </button>
+          <button
             className={activeTab === 'list' ? 'active' : ''}
             onClick={() => setActiveTab('list')}
           >
             📝 一覧
           </button>
           <button
-            className={activeTab === 'graph' ? 'active' : ''}
-            onClick={() => setActiveTab('graph')}
+            className={activeTab === 'reports' ? 'active' : ''}
+            onClick={() => setActiveTab('reports')}
           >
-            📈 グラフ
+            📊 レポート
           </button>
         </div>
         
@@ -238,6 +245,8 @@ function Records() {
             <p>記録がありません</p>
             <p>タイマーを実行して記録を作成しましょう</p>
           </div>
+        ) : activeTab === 'reports' ? (
+          <ReportsView records={records} />
         ) : activeTab === 'list' ? (
           <div className="records-list">
             {records.map((record) => (
