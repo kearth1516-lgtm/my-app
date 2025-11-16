@@ -1143,6 +1143,8 @@
 - `POST /api/recipes/:id/cook`: 調理記録（timesCooked++）
 - `POST /api/recipes/import?url=xxx`: 外部サイトから取り込み
 - `POST /api/recipes/suggest?ingredients=xxx`: AI提案
+- `GET /api/recipes/recommend`: おすすめレシピ取得（RAGベース、limit, user_id）
+- `POST /api/recipes/embeddings/rebuild`: ベクトルDB再構築（管理用）
 
 ---
 
@@ -1194,6 +1196,92 @@
 - ~~検索機能~~ ✅ 実装済み（名前・材料・手順・タグから検索）
 - ~~外部レシピサイト連携~~ ✅ 実装済み（クックパッド、楽天レシピ対応）
 - ~~AI提案機能~~ ✅ 実装済み（OpenAI API使用）
+- **RAG推薦システム** 🚧 実装中
+  - ベクトル検索による類似レシピ推薦
+  - 調理履歴ベースのパーソナライズ推薦
+  - AI生成の推薦理由表示
+
+### レシピRAG推薦システム（Phase 2-3、完了） ✅
+
+#### 概要
+調理履歴とレシピデータをベクトル化し、RAGで個別化されたレシピ推薦を提供。
+
+#### アーキテクチャ
+1. **Embeddingモジュール** (`backend/embedding_service.py`)
+   - Sentence Transformersで日本語テキストをベクトル化
+   - モデル: paraphrase-multilingual-MiniLM-L12-v2
+   - キャッシュ機能でパフォーマンス向上
+
+2. **ベクトルDBモジュール** (`backend/vector_store.py`)
+   - ChromaDBでベクトル保存・検索
+   - メタデータ: レシピID、名前、タグ、調理回数、お気に入り
+   - 類似度検索（コサイン類似度）
+
+3. **推薦エンジン** (`backend/recommendation_engine.py`)
+   - ユーザーの調理履歴から好みを分析
+   - ベクトル検索で類似レシピを取得
+   - Azure OpenAIで推薦理由を生成（オプション）
+
+#### 推薦ロジック
+1. ユーザーが調理したレシピのベクトルを平均化
+2. お気に入りレシピに重み付け（2倍）
+3. ベクトル検索で上位5-10件を取得
+4. 既に調理済みのレシピを除外
+5. Azure OpenAIで推薦理由を生成
+
+#### コスト最適化
+- Embedding: ローカル実行（$0）
+- ベクトルDB: ローカル実行（$0）
+- Azure OpenAI: 推薦理由生成のみ（月100回想定、$0.30程度）
+- キャッシュ: 同じユーザーの重複リクエストを削減
+- **合計想定コスト: 月$2-5**
+
+#### データフロー
+```
+レシピ作成/更新
+  ↓
+Embeddingモジュール（ローカル）
+  ↓
+ChromaDB保存
+  ↓
+ユーザーが「おすすめ」をリクエスト
+  ↓
+調理履歴を取得
+  ↓
+ベクトル検索（類似レシピ）
+  ↓
+Azure OpenAI（推薦理由生成）← キャッシュチェック
+  ↓
+推薦結果をフロントエンドに返却
+```
+
+#### 実装ステップ
+- [x] Phase 1: 依存パッケージインストール（sentence-transformers 3.0.1, chromadb 0.4.18）
+- [x] Phase 2: Embeddingモジュール作成（backend/embedding_service.py）
+- [x] Phase 3: ベクトルDBモジュール作成（backend/vector_store.py）
+- [x] Phase 4: 推薦エンジン作成（backend/recommendation_engine.py）
+- [x] Phase 5: 推薦APIエンドポイント追加（/api/recipes/recommend）
+- [x] Phase 6: フロントエンド実装（おすすめレシピボタン、推薦モーダル）
+- [x] Phase 7: インデックス初期化スクリプト作成（backend/init_vector_store.py）
+
+#### 追加ファイル
+- `backend/embedding_service.py`: Embeddingサービス（131行）
+- `backend/vector_store.py`: ベクトルストア管理（188行）
+- `backend/recommendation_engine.py`: レシピ推薦エンジン（197行）
+- `backend/init_vector_store.py`: インデックス初期化スクリプト（58行）
+- `backend/chroma_db/`: ChromaDBストレージ（自動生成）
+
+#### 使用方法
+1. **初回セットアップ**:
+   ```bash
+   cd backend
+   python init_vector_store.py
+   ```
+2. **推薦を取得**:
+   - フロントエンドで「🔮 おすすめレシピ」ボタンをクリック
+   - 調理履歴が多いほど精度が向上
+3. **インデックス再構築**:
+   - POST `/api/recipes/embeddings/rebuild`を呼び出し
 
 ### 今後の実装予定
 - 日次リマインダー機能
@@ -1229,6 +1317,17 @@
       - テキスト分析、要約、キーフレーズ抽出
       - 価格: 無料枠あり（月間5,000テキストレコード）
       - 機能は限定的（レシピ生成には不向き）
+- **RAGシステム（レシピ推薦）**:
+  - **Embedding**: Sentence Transformers（ローカル実行、無料）
+    - モデル: paraphrase-multilingual-MiniLM-L12-v2
+    - 日本語対応、384次元ベクトル
+  - **ベクトルDB**: ChromaDB（ローカル実行、無料）
+    - 永続化: SQLiteバックエンド
+    - ストレージ: backend/chroma_db/
+  - **推薦生成**: Azure OpenAI（必要時のみ呼び出し）
+    - 月100回程度の想定（月$0.30程度）
+    - キャッシュ機能で重複リクエスト削減
+  - **想定コスト**: 月$2-5程度
 - **スクレイピング**:
   - BeautifulSoup4 + requests: レシピ取り込み機能
   - lxml: HTML/XMLパーサー

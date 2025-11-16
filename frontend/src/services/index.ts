@@ -12,6 +12,8 @@ export const recipeService = {
   recordCooking: (id: string) => api.post(`/recipes/${id}/cook`),
   importFromUrl: (url: string) => api.post('/recipes/import', null, { params: { url } }),
   suggestByIngredients: (ingredients: string[]) => api.post('/recipes/suggest', null, { params: { ingredients } }),
+  getRecommendations: (limit?: number) => api.get('/recipes/recommend', { params: { limit } }),
+  rebuildIndex: () => api.post('/recipes/embeddings/rebuild'),
 };
 
 // タイマーAPI

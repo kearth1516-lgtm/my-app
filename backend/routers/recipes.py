@@ -5,6 +5,8 @@ from datetime import datetime
 import uuid
 from database import get_recipes_container
 from recipe_scraper import RecipeScraper
+from recommendation_engine import get_recommendation_engine
+from vector_store import get_vector_store
 
 router = APIRouter()
 
@@ -118,6 +120,14 @@ async def create_recipe(recipe: RecipeCreate):
         }
         
         container.create_item(body=new_recipe)
+        
+        # ベクトルストアに追加
+        try:
+            vector_store = get_vector_store()
+            vector_store.add_recipe(new_recipe["id"], new_recipe)
+        except Exception as ve:
+            print(f"Warning: Failed to add recipe to vector store: {ve}")
+        
         return {"data": new_recipe}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -160,6 +170,14 @@ async def update_recipe(recipe_id: str, update: RecipeUpdate):
             existing_recipe["isFavorite"] = update.isFavorite
         
         container.replace_item(item=recipe_id, body=existing_recipe)
+        
+        # ベクトルストアを更新
+        try:
+            vector_store = get_vector_store()
+            vector_store.add_recipe(recipe_id, existing_recipe)
+        except Exception as ve:
+            print(f"Warning: Failed to update recipe in vector store: {ve}")
+        
         return {"data": existing_recipe}
     except Exception as e:
         if "404" in str(e):
@@ -172,6 +190,14 @@ async def delete_recipe(recipe_id: str):
     try:
         container = get_recipes_container()
         container.delete_item(item=recipe_id, partition_key=recipe_id)
+        
+        # ベクトルストアから削除
+        try:
+            vector_store = get_vector_store()
+            vector_store.delete_recipe(recipe_id)
+        except Exception as ve:
+            print(f"Warning: Failed to delete recipe from vector store: {ve}")
+        
         return {"message": "Recipe deleted successfully"}
     except Exception as e:
         if "404" in str(e):
@@ -292,3 +318,51 @@ JSONのみを返してください。説明文は不要です。"""
     except Exception as e:
         print(f"AI suggestion error: {e}")
         raise HTTPException(status_code=500, detail=f"AI提案の生成に失敗しました: {str(e)}")
+
+# レシピ推薦機能（RAGベース）
+@router.get("/recommend")
+async def recommend_recipes(limit: int = 5):
+    """ユーザーの調理履歴に基づいてレシピを推薦（RAGベース）"""
+    try:
+        # 推薦エンジンを取得
+        engine = get_recommendation_engine()
+        
+        # 調理記録から作ったレシピIDを取得
+        from database import get_records_container
+        records_container = get_records_container()
+        query = "SELECT c.recipeId, c.isFavorite FROM c WHERE c.activityType = 'cooking'"
+        records = list(records_container.query_items(query=query, enable_cross_partition_query=True))
+        
+        # 調理したレシピIDのリストを作成
+        cooked_recipe_ids = list(set([r["recipeId"] for r in records if r.get("recipeId")]))
+        
+        # 推薦を取得（推薦理由も生成）
+        recommendations = engine.recommend_recipes(
+            cooked_recipe_ids=cooked_recipe_ids,
+            n_recommendations=limit,
+            generate_reason=True
+        )
+        
+        return {"data": recommendations}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Recommendation error: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"レシピの推薦に失敗しました: {str(e)}")
+
+# ベクトルインデックス再構築（管理用）
+@router.post("/embeddings/rebuild")
+async def rebuild_embeddings():
+    """全レシピのベクトルインデックスを再構築"""
+    try:
+        engine = get_recommendation_engine()
+        result = engine.rebuild_vector_index()
+        return {"message": "Vector index rebuilt successfully", "data": result}
+    except Exception as e:
+        print(f"Rebuild index error: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"インデックスの再構築に失敗しました: {str(e)}")

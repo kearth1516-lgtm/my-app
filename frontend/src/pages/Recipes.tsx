@@ -22,6 +22,8 @@ function Recipes() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isAiSuggestModalOpen, setIsAiSuggestModalOpen] = useState(false);
+  const [isRecommendModalOpen, setIsRecommendModalOpen] = useState(false);
+  const [recommendedRecipes, setRecommendedRecipes] = useState<(Recipe & { reason?: string })[]>([]);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [viewingRecipe, setViewingRecipe] = useState<Recipe | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -111,6 +113,19 @@ function Recipes() {
     }
   };
 
+  // レシピ推薦を取得
+  const handleGetRecommendations = async () => {
+    try {
+      setIsRecommendModalOpen(true);
+      setRecommendedRecipes([]);
+      const response = await recipeService.getRecommendations(5);
+      setRecommendedRecipes(response.data.data || []);
+    } catch (error) {
+      console.error('レシピの推薦に失敗しました:', error);
+      alert('レシピの推薦に失敗しました');
+    }
+  };
+
   if (loading) {
     return (
       <div className="recipes-page">
@@ -138,6 +153,9 @@ function Recipes() {
           </button>
           <button className="ai-button" onClick={() => setIsAiSuggestModalOpen(true)}>
             ✨ AI提案
+          </button>
+          <button className="recommend-button" onClick={handleGetRecommendations}>
+            🔮 おすすめレシピ
           </button>
         </div>
       </div>
@@ -319,6 +337,20 @@ function Recipes() {
           }}
         />
       )}
+
+      {/* 推薦モーダル */}
+      <RecommendationsModal
+        isOpen={isRecommendModalOpen}
+        onClose={() => {
+          setIsRecommendModalOpen(false);
+          setRecommendedRecipes([]);
+        }}
+        recommendations={recommendedRecipes}
+        onViewRecipe={(recipe) => {
+          setIsRecommendModalOpen(false);
+          setViewingRecipe(recipe);
+        }}
+      />
     </div>
   );
 }
@@ -803,6 +835,84 @@ function RecipeDetailModal({ recipe, onClose, onEdit }: RecipeDetailModalProps) 
             onClick={() => onEdit(recipe)}
           >
             ✏️ 編集
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// レシピ推薦モーダル
+function RecommendationsModal({
+  isOpen,
+  onClose,
+  recommendations,
+  onViewRecipe
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  recommendations: (Recipe & { reason?: string })[];
+  onViewRecipe: (recipe: Recipe) => void;
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal recommend-modal" onClick={(e) => e.stopPropagation()}>
+        <h2>🔮 おすすめのレシピ</h2>
+        
+        {recommendations.length === 0 ? (
+          <div className="no-recommendations">
+            <p>おすすめのレシピを準備中...</p>
+            <p style={{ fontSize: '0.9em', color: '#666', marginTop: '10px' }}>
+              調理記録が増えると、より精度の高いおすすめができます
+            </p>
+          </div>
+        ) : (
+          <div className="recommendations-list">
+            {recommendations.map((recipe, index) => (
+              <div key={recipe.id} className="recommendation-card">
+                <div className="recommendation-header">
+                  <h3>
+                    {index + 1}. {recipe.name}
+                  </h3>
+                  <div className="recipe-meta">
+                    {recipe.cookingTime && (
+                      <span className="cooking-time">⏱️ {recipe.cookingTime}分</span>
+                    )}
+                    <span className="times-cooked">📊 {recipe.timesCooked}回作成</span>
+                  </div>
+                </div>
+                
+                {recipe.reason && (
+                  <div className="recommendation-reason">
+                    <strong>💡 推薦理由:</strong>
+                    <p>{recipe.reason}</p>
+                  </div>
+                )}
+                
+                {recipe.tags.length > 0 && (
+                  <div className="recipe-tags">
+                    {recipe.tags.map((tag, idx) => (
+                      <span key={idx} className="tag">{tag}</span>
+                    ))}
+                  </div>
+                )}
+                
+                <button
+                  className="view-recipe-button"
+                  onClick={() => onViewRecipe(recipe)}
+                >
+                  詳細を見る
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="modal-actions">
+          <button type="button" className="cancel-button" onClick={onClose}>
+            閉じる
           </button>
         </div>
       </div>

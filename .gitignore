@@ -6,6 +6,9 @@ __pycache__/
 .env
 .pytest_cache/
 
+# ChromaDB
+backend/chroma_db/
+
 # Node
 node_modules/
 build/

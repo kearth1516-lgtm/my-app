@@ -111,3 +111,12 @@ nohup: ignoring input
 4:42:47 PM [vite] (client) hmr update /src/pages/Recipes.css
 4:58:45 PM [vite] (client) hmr update /src/pages/Recipes.css
 4:58:46 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+5:36:56 PM [vite] (client) hmr update /src/App.tsx, /src/pages/Home.tsx, /src/pages/Settings.tsx, /src/pages/Records.tsx, /src/pages/Timers.tsx, /src/pages/Recipes.tsx
+5:37:11 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+5:37:27 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+5:37:34 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+5:37:55 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+5:38:22 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+5:38:35 PM [vite] (client) hmr update /src/pages/Recipes.css
+5:38:46 PM [vite] (client) hmr update /src/pages/Recipes.css
+5:39:06 PM [vite] (client) hmr update /src/pages/Recipes.css
