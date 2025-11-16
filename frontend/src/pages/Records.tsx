@@ -7,6 +7,7 @@ import ManualRecordModal from '../components/ManualRecordModal';
 import RecordDetailModal from '../components/RecordDetailModal';
 import EditRecordModal from '../components/EditRecordModal';
 import ReportsView from '../components/ReportsView';
+import CalendarView from '../components/CalendarView';
 import './Records.css';
 
 function Records() {
@@ -15,7 +16,7 @@ function Records() {
   const [timers, setTimers] = useState<Timer[]>([]);
   const [allTags, setAllTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'list' | 'graph' | 'reports'>('graph');
+  const [activeTab, setActiveTab] = useState<'list' | 'graph' | 'reports' | 'calendar'>('graph');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [summary, setSummary] = useState<any>(null);
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
@@ -233,6 +234,12 @@ function Records() {
             📝 一覧
           </button>
           <button
+            className={activeTab === 'calendar' ? 'active' : ''}
+            onClick={() => setActiveTab('calendar')}
+          >
+            📅 カレンダー
+          </button>
+          <button
             className={activeTab === 'reports' ? 'active' : ''}
             onClick={() => setActiveTab('reports')}
           >
@@ -247,6 +254,8 @@ function Records() {
           </div>
         ) : activeTab === 'reports' ? (
           <ReportsView records={records} />
+        ) : activeTab === 'calendar' ? (
+          <CalendarView records={records} onDateClick={handleDateClick} />
         ) : activeTab === 'list' ? (
           <div className="records-list">
             {records.map((record) => (

@@ -14,8 +14,8 @@
 
 .period-btn {
   padding: 12px 32px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  background: rgba(255, 255, 255, 0.9);
+  color: #667eea;
   border: 2px solid rgba(255, 255, 255, 0.5);
   border-radius: 25px;
   font-size: 1rem;
@@ -25,15 +25,17 @@
 }
 
 .period-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.8);
+  background: white;
+  border-color: white;
   transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .period-btn.active {
   background: white;
   color: #667eea;
   border-color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .reports-content {
