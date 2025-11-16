@@ -18,6 +18,7 @@ TIMERS_CONTAINER = "timers"
 TAGS_CONTAINER = "tags"
 SETTINGS_CONTAINER = "settings"
 RECORDS_CONTAINER = "records"
+RECIPES_CONTAINER = "recipes"
 
 # Initialize Cosmos Client
 cosmos_client = CosmosClient(COSMOS_ENDPOINT, COSMOS_KEY)
@@ -28,13 +29,14 @@ timers_container = None
 tags_container = None
 settings_container = None
 records_container = None
+recipes_container = None
 
 
 def initialize_database():
     """
     Initialize Cosmos DB database and containers
     """
-    global database, timers_container, tags_container, settings_container, records_container
+    global database, timers_container, tags_container, settings_container, records_container, recipes_container
     
     try:
         # Create database if it doesn't exist
@@ -68,6 +70,13 @@ def initialize_database():
             partition_key=PartitionKey(path="/id")
         )
         print(f"Container '{RECORDS_CONTAINER}' initialized")
+        
+        # Create recipes container
+        recipes_container = database.create_container_if_not_exists(
+            id=RECIPES_CONTAINER,
+            partition_key=PartitionKey(path="/id")
+        )
+        print(f"Container '{RECIPES_CONTAINER}' initialized")
         
         # Initialize default settings if not exists
         initialize_default_settings()
@@ -117,3 +126,28 @@ def initialize_default_stopwatch():
 
 # Initialize on module import
 initialize_database()
+
+
+def get_timers_container():
+    """Get timers container reference"""
+    return timers_container
+
+
+def get_tags_container():
+    """Get tags container reference"""
+    return tags_container
+
+
+def get_settings_container():
+    """Get settings container reference"""
+    return settings_container
+
+
+def get_records_container():
+    """Get records container reference"""
+    return records_container
+
+
+def get_recipes_container():
+    """Get recipes container reference"""
+    return recipes_container

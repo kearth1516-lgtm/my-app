@@ -1,14 +1,15 @@
 // 共通型定義
 
 export interface Recipe {
-  id?: string;
+  id: string;
   name: string;
   ingredients: string[];
-  cookingTime: number;
+  cookingTime?: number; // 分単位、オプショナル
   source?: string;
   tags: string[];
   isFavorite: boolean;
   timesCooked: number;
+  createdAt: string;
 }
 
 export interface Timer {

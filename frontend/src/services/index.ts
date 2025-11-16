@@ -3,11 +3,12 @@ import type { Recipe, Timer, FashionItem, DailyOutfit, HomeImage, TimerRecord } 
 
 // レシピAPI
 export const recipeService = {
-  getAll: () => api.get<Recipe[]>('/recipes'),
-  getById: (id: string) => api.get<Recipe>(`/recipes/${id}`),
-  create: (data: Recipe) => api.post<Recipe>('/recipes', data),
-  update: (id: string, data: Recipe) => api.put<Recipe>(`/recipes/${id}`, data),
+  getAll: (params?: { favorite?: boolean; tag?: string }) => api.get('/recipes', { params }),
+  getById: (id: string) => api.get(`/recipes/${id}`),
+  create: (data: { name: string; ingredients: string[]; cookingTime?: number; source?: string; tags: string[]; isFavorite?: boolean }) => api.post('/recipes', data),
+  update: (id: string, data: { name?: string; ingredients?: string[]; cookingTime?: number; source?: string; tags?: string[]; isFavorite?: boolean }) => api.put(`/recipes/${id}`, data),
   delete: (id: string) => api.delete(`/recipes/${id}`),
+  toggleFavorite: (id: string, isFavorite: boolean) => api.patch(`/recipes/${id}/favorite`, null, { params: { is_favorite: isFavorite } }),
   recordCooking: (id: string) => api.post(`/recipes/${id}/cook`),
 };
 
