@@ -4,6 +4,7 @@ from typing import List, Optional
 from datetime import datetime
 import uuid
 from database import get_recipes_container
+from recipe_scraper import RecipeScraper
 
 router = APIRouter()
 
@@ -39,8 +40,12 @@ class Recipe(BaseModel):
     createdAt: str
 
 @router.get("/")
-async def get_recipes(favorite: Optional[bool] = None, tag: Optional[str] = None):
-    """レシピ一覧取得（フィルタリング対応）"""
+async def get_recipes(
+    favorite: Optional[bool] = None, 
+    tag: Optional[str] = None,
+    search: Optional[str] = None  # 検索キーワード
+):
+    """レシピ一覧取得（フィルタリング・検索対応）"""
     try:
         container = get_recipes_container()
         query = "SELECT * FROM c"
@@ -49,6 +54,39 @@ async def get_recipes(favorite: Optional[bool] = None, tag: Optional[str] = None
         # フィルタリング
         if favorite is not None:
             recipes = [r for r in recipes if r.get("isFavorite") == favorite]
+        
+        if tag:
+            recipes = [r for r in recipes if tag in r.get("tags", [])]
+        
+        # 検索（名前、材料、タグから部分一致）
+        if search:
+            search_lower = search.lower()
+            filtered_recipes = []
+            for r in recipes:
+                # 名前での検索
+                if search_lower in r.get("name", "").lower():
+                    filtered_recipes.append(r)
+                    continue
+                
+                # 材料での検索
+                ingredients = r.get("ingredients", [])
+                if any(search_lower in ing.lower() for ing in ingredients):
+                    filtered_recipes.append(r)
+                    continue
+                
+                # タグでの検索
+                tags = r.get("tags", [])
+                if any(search_lower in t.lower() for t in tags):
+                    filtered_recipes.append(r)
+                    continue
+                
+                # 手順での検索
+                steps = r.get("steps", [])
+                if any(search_lower in s.lower() for s in steps):
+                    filtered_recipes.append(r)
+                    continue
+            
+            recipes = filtered_recipes
         
         if tag:
             recipes = [r for r in recipes if tag in r.get("tags", [])]
@@ -168,3 +206,89 @@ async def toggle_favorite(recipe_id: str, is_favorite: bool):
         if "404" in str(e):
             raise HTTPException(status_code=404, detail="Recipe not found")
         raise HTTPException(status_code=500, detail=str(e))
+
+# 外部サイトからレシピ取り込み
+@router.post("/import")
+async def import_recipe(url: str):
+    """外部サイトからレシピをスクレイピング"""
+    try:
+        # URLからレシピ情報を取得
+        recipe_data = RecipeScraper.scrape(url)
+        
+        if not recipe_data:
+            raise HTTPException(status_code=400, detail="レシピ情報を取得できませんでした")
+        
+        # 取得したデータを返す（保存はフロントエンドで確認後）
+        return {"data": recipe_data}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Import error: {e}")
+        raise HTTPException(status_code=500, detail=f"レシピの取り込みに失敗しました: {str(e)}")
+
+# AI提案機能
+@router.post("/suggest")
+async def suggest_recipe(ingredients: List[str]):
+    """材料からレシピを提案（AI機能）"""
+    try:
+        import os
+        from openai import OpenAI
+        
+        # OpenAI APIキーの確認
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise HTTPException(
+                status_code=503, 
+                detail="AI機能は現在利用できません（APIキーが設定されていません）"
+            )
+        
+        client = OpenAI(api_key=api_key)
+        
+        # プロンプト作成
+        ingredients_text = "、".join(ingredients)
+        prompt = f"""以下の材料を使ったレシピを提案してください。
+
+材料: {ingredients_text}
+
+以下のJSON形式で回答してください：
+{{
+  "name": "レシピ名",
+  "ingredients": ["材料1 分量", "材料2 分量", ...],
+  "steps": ["手順1", "手順2", ...],
+  "cookingTime": 調理時間（分、数値のみ）,
+  "tags": ["タグ1", "タグ2", ...]
+}}
+
+JSONのみを返してください。説明文は不要です。"""
+
+        # OpenAI API呼び出し
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "あなたは料理のプロフェッショナルです。"},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=1000
+        )
+        
+        # レスポンス解析
+        import json
+        content = response.choices[0].message.content
+        # JSON部分のみ抽出
+        if "```json" in content:
+            content = content.split("```json")[1].split("```")[0]
+        elif "```" in content:
+            content = content.split("```")[1].split("```")[0]
+        
+        recipe_data = json.loads(content.strip())
+        recipe_data["tags"] = recipe_data.get("tags", []) + ["AI提案"]
+        
+        return {"data": recipe_data}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"AI suggestion error: {e}")
+        raise HTTPException(status_code=500, detail=f"AI提案の生成に失敗しました: {str(e)}")

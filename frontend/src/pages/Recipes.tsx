@@ -18,7 +18,10 @@ function Recipes() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isAiSuggestModalOpen, setIsAiSuggestModalOpen] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -26,7 +29,10 @@ function Recipes() {
   const loadRecipes = async () => {
     try {
       setLoading(true);
-      const params = showFavoritesOnly ? { favorite: true } : undefined;
+      const params: any = {};
+      if (showFavoritesOnly) params.favorite = true;
+      if (searchQuery.trim()) params.search = searchQuery.trim();
+      
       const response = await recipeService.getAll(params);
       setRecipes(response.data.data || []);
     } catch (error) {
@@ -38,7 +44,7 @@ function Recipes() {
 
   useEffect(() => {
     loadRecipes();
-  }, [showFavoritesOnly]);
+  }, [showFavoritesOnly, searchQuery]);
 
   // お気に入り切り替え
   const handleToggleFavorite = async (recipe: Recipe) => {
@@ -126,7 +132,33 @@ function Recipes() {
           <button className="create-button" onClick={() => setIsCreateModalOpen(true)}>
             ＋ 新規作成
           </button>
+          <button className="import-button" onClick={() => setIsImportModalOpen(true)}>
+            🌐 URLから取り込み
+          </button>
+          <button className="ai-button" onClick={() => setIsAiSuggestModalOpen(true)}>
+            ✨ AI提案
+          </button>
         </div>
+      </div>
+
+      {/* 検索バー */}
+      <div className="search-bar">
+        <input
+          type="text"
+          placeholder="🔍 レシピ名、材料、タグで検索..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="search-input"
+        />
+        {searchQuery && (
+          <button
+            className="clear-search"
+            onClick={() => setSearchQuery('')}
+            title="検索をクリア"
+          >
+            ×
+          </button>
+        )}
       </div>
 
       <div className="recipes-grid">
@@ -239,6 +271,22 @@ function Recipes() {
           recipe={editingRecipe}
           onClose={() => setEditingRecipe(null)}
           onSubmit={handleUpdateRecipe}
+        />
+      )}
+
+      {/* 取り込みモーダル */}
+      {isImportModalOpen && (
+        <ImportRecipeModal
+          onClose={() => setIsImportModalOpen(false)}
+          onImport={handleCreateRecipe}
+        />
+      )}
+
+      {/* AI提案モーダル */}
+      {isAiSuggestModalOpen && (
+        <AiSuggestModal
+          onClose={() => setIsAiSuggestModalOpen(false)}
+          onAccept={handleCreateRecipe}
         />
       )}
     </div>
@@ -358,6 +406,255 @@ function RecipeModal({ recipe, onClose, onSubmit }: RecipeModalProps) {
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  );
+}
+
+// 取り込みモーダルコンポーネント
+interface ImportRecipeModalProps {
+  onClose: () => void;
+  onImport: (data: RecipeFormData) => void;
+}
+
+function ImportRecipeModal({ onClose, onImport }: ImportRecipeModalProps) {
+  const [url, setUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [importedData, setImportedData] = useState<any>(null);
+
+  const handleFetch = async () => {
+    if (!url.trim()) {
+      alert('URLを入力してください');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await recipeService.importFromUrl(url.trim());
+      const data = response.data.data;
+      
+      if (!data || !data.name) {
+        alert('レシピ情報を取得できませんでした');
+        return;
+      }
+
+      setImportedData(data);
+    } catch (error: any) {
+      console.error('取り込みエラー:', error);
+      alert(error.response?.data?.detail || 'レシピの取り込みに失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleConfirm = () => {
+    if (!importedData) return;
+    
+    onImport({
+      name: importedData.name,
+      ingredients: importedData.ingredients || [],
+      steps: importedData.steps || [],
+      cookingTime: importedData.cookingTime,
+      source: importedData.source,
+      tags: importedData.tags || [],
+    });
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content import-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>🌐 URLからレシピを取り込む</h2>
+          <button className="close-button" onClick={onClose}>×</button>
+        </div>
+
+        {!importedData ? (
+          <div className="import-form">
+            <p className="import-description">
+              クックパッド、楽天レシピなどのレシピURLを入力してください
+            </p>
+            <div className="form-group">
+              <input
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://cookpad.com/recipe/..."
+                disabled={loading}
+                className="url-input"
+              />
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="cancel-button" onClick={onClose}>
+                キャンセル
+              </button>
+              <button
+                type="button"
+                className="submit-button"
+                onClick={handleFetch}
+                disabled={loading}
+              >
+                {loading ? '取り込み中...' : '取り込む'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="import-preview">
+            <h3>取り込み内容の確認</h3>
+            <div className="preview-content">
+              <p><strong>レシピ名:</strong> {importedData.name}</p>
+              <p><strong>材料:</strong> {importedData.ingredients?.length || 0}件</p>
+              <p><strong>手順:</strong> {importedData.steps?.length || 0}件</p>
+              {importedData.cookingTime && (
+                <p><strong>調理時間:</strong> {importedData.cookingTime}分</p>
+              )}
+              {importedData.tags && importedData.tags.length > 0 && (
+                <p><strong>タグ:</strong> {importedData.tags.join(', ')}</p>
+              )}
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="cancel-button" onClick={() => setImportedData(null)}>
+                やり直し
+              </button>
+              <button type="button" className="submit-button" onClick={handleConfirm}>
+                保存する
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// AI提案モーダルコンポーネント
+interface AiSuggestModalProps {
+  onClose: () => void;
+  onAccept: (data: RecipeFormData) => void;
+}
+
+function AiSuggestModal({ onClose, onAccept }: AiSuggestModalProps) {
+  const [ingredientsInput, setIngredientsInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [suggestedRecipe, setSuggestedRecipe] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleGenerate = async () => {
+    if (!ingredientsInput.trim()) {
+      alert('材料を入力してください');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const ingredients = ingredientsInput
+        .split('\n')
+        .map(i => i.trim())
+        .filter(i => i);
+      
+      const response = await recipeService.suggestByIngredients(ingredients);
+      const data = response.data.data;
+      
+      if (!data || !data.name) {
+        throw new Error('レシピを生成できませんでした');
+      }
+
+      setSuggestedRecipe(data);
+    } catch (err: any) {
+      console.error('AI提案エラー:', err);
+      
+      if (err.response?.status === 503) {
+        setError('AI機能は現在利用できません（APIキーが設定されていません）');
+      } else {
+        setError(err.response?.data?.detail || 'レシピの生成に失敗しました');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAccept = () => {
+    if (!suggestedRecipe) return;
+    
+    onAccept({
+      name: suggestedRecipe.name,
+      ingredients: suggestedRecipe.ingredients || [],
+      steps: suggestedRecipe.steps || [],
+      cookingTime: suggestedRecipe.cookingTime,
+      source: undefined,
+      tags: suggestedRecipe.tags || [],
+    });
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content ai-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>✨ AIレシピ提案</h2>
+          <button className="close-button" onClick={onClose}>×</button>
+        </div>
+
+        {!suggestedRecipe ? (
+          <div className="ai-form">
+            <p className="ai-description">
+              手持ちの材料を入力すると、AIがレシピを提案します
+            </p>
+            <div className="form-group">
+              <label>材料（1行に1つ）</label>
+              <textarea
+                value={ingredientsInput}
+                onChange={(e) => setIngredientsInput(e.target.value)}
+                placeholder="例:&#10;鶏もも肉&#10;玉ねぎ&#10;カレールー"
+                rows={6}
+                disabled={loading}
+              />
+            </div>
+            
+            {error && (
+              <div className="error-message">{error}</div>
+            )}
+            
+            <div className="modal-actions">
+              <button type="button" className="cancel-button" onClick={onClose}>
+                キャンセル
+              </button>
+              <button
+                type="button"
+                className="submit-button"
+                onClick={handleGenerate}
+                disabled={loading}
+              >
+                {loading ? '生成中...' : 'レシピを生成'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="ai-preview">
+            <h3>提案されたレシピ</h3>
+            <div className="preview-content">
+              <p><strong>レシピ名:</strong> {suggestedRecipe.name}</p>
+              <p><strong>材料:</strong> {suggestedRecipe.ingredients?.length || 0}件</p>
+              <p><strong>手順:</strong> {suggestedRecipe.steps?.length || 0}件</p>
+              {suggestedRecipe.cookingTime && (
+                <p><strong>調理時間:</strong> {suggestedRecipe.cookingTime}分</p>
+              )}
+              {suggestedRecipe.tags && suggestedRecipe.tags.length > 0 && (
+                <p><strong>タグ:</strong> {suggestedRecipe.tags.join(', ')}</p>
+              )}
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="cancel-button" onClick={() => setSuggestedRecipe(null)}>
+                やり直し
+              </button>
+              <button type="button" className="submit-button" onClick={handleAccept}>
+                保存する
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -3,13 +3,15 @@ import type { Recipe, Timer, FashionItem, DailyOutfit, HomeImage, TimerRecord } 
 
 // レシピAPI
 export const recipeService = {
-  getAll: (params?: { favorite?: boolean; tag?: string }) => api.get('/recipes', { params }),
+  getAll: (params?: { favorite?: boolean; tag?: string; search?: string }) => api.get('/recipes', { params }),
   getById: (id: string) => api.get(`/recipes/${id}`),
   create: (data: { name: string; ingredients: string[]; steps: string[]; cookingTime?: number; source?: string; tags: string[]; isFavorite?: boolean }) => api.post('/recipes', data),
   update: (id: string, data: { name?: string; ingredients?: string[]; steps?: string[]; cookingTime?: number; source?: string; tags?: string[]; isFavorite?: boolean }) => api.put(`/recipes/${id}`, data),
   delete: (id: string) => api.delete(`/recipes/${id}`),
   toggleFavorite: (id: string, isFavorite: boolean) => api.patch(`/recipes/${id}/favorite`, null, { params: { is_favorite: isFavorite } }),
   recordCooking: (id: string) => api.post(`/recipes/${id}/cook`),
+  importFromUrl: (url: string) => api.post('/recipes/import', null, { params: { url } }),
+  suggestByIngredients: (ingredients: string[]) => api.post('/recipes/suggest', null, { params: { ingredients } }),
 };
 
 // タイマーAPI

@@ -92,3 +92,20 @@ nohup: ignoring input
 4:29:54 PM [vite] (client) hmr update /src/pages/Recipes.css
 4:31:18 PM [vite] (client) hmr update /src/pages/Recipes.tsx
 4:31:18 PM [vite] (client) hmr update /src/pages/Recipes.css
+4:35:24 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+4:35:40 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+4:35:55 PM [vite] (client) hmr update /src/pages/Recipes.css
+4:38:30 PM [vite] (client) hmr update /src/App.tsx, /src/pages/Home.tsx, /src/pages/Settings.tsx, /src/pages/Records.tsx, /src/pages/Timers.tsx, /src/pages/Recipes.tsx
+4:39:06 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+4:39:14 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+4:39:30 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+4:39:52 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+4:40:07 PM [vite] (client) hmr update /src/pages/Recipes.css
+4:40:21 PM [vite] (client) hmr update /src/pages/Recipes.css
+4:41:36 PM [vite] (client) hmr update /src/App.tsx, /src/pages/Home.tsx, /src/pages/Settings.tsx, /src/pages/Records.tsx, /src/pages/Timers.tsx, /src/pages/Recipes.tsx
+4:41:46 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+4:41:58 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+4:42:07 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+4:42:30 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+4:42:38 PM [vite] (client) hmr update /src/pages/Recipes.css
+4:42:47 PM [vite] (client) hmr update /src/pages/Recipes.css
