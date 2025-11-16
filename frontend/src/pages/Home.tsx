@@ -29,6 +29,7 @@ function Home() {
       <header className="home-header">
         <h1>🌟 My App</h1>
         <p>推しと一緒に、毎日を楽しく</p>
+        <a href="/settings" className="settings-link">⚙️</a>
       </header>
 
       <div className="home-image-container">

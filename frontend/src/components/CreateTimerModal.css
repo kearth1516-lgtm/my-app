@@ -23,7 +23,7 @@
 }
 
 .modal-content {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--theme-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
   border-radius: 20px;
   padding: 30px;
   max-width: 500px;
@@ -53,7 +53,7 @@
 }
 
 .modal-header h2 {
-  color: white;
+  color: var(--theme-text-color, white);
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
@@ -62,7 +62,7 @@
 .close-button {
   background: none;
   border: none;
-  color: white;
+  color: var(--theme-text-color, white);
   font-size: 2rem;
   cursor: pointer;
   padding: 0;
@@ -92,7 +92,7 @@
 }
 
 .form-group label {
-  color: white;
+  color: var(--theme-text-color, white);
   font-weight: 500;
   font-size: 0.95rem;
 }
@@ -102,7 +102,7 @@
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.1);
-  color: white;
+  color: var(--theme-text-color, white);
   font-size: 1rem;
   transition: border-color 0.2s, background-color 0.2s;
 }
@@ -113,7 +113,7 @@
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.1);
-  color: white;
+  color: var(--theme-text-color, white);
   font-size: 1rem;
   transition: border-color 0.2s, background-color 0.2s;
   cursor: pointer;
@@ -165,7 +165,7 @@
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.1);
-  color: white;
+  color: var(--theme-text-color, white);
   font-size: 1.2rem;
   text-align: center;
   transition: border-color 0.2s, background-color 0.2s;
@@ -178,7 +178,7 @@
 }
 
 .time-input-group span {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--theme-text-alpha, rgba(255, 255, 255, 0.9));
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -196,7 +196,7 @@
 }
 
 .preview-section label {
-  color: white;
+  color: var(--theme-text-color, white);
   font-weight: 500;
   font-size: 0.95rem;
 }
@@ -204,9 +204,71 @@
 .image-preview {
   width: 100%;
   height: 200px;
-  object-fit: cover;
   border-radius: 15px;
   border: 3px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-status {
+  color: var(--theme-text-alpha, rgba(255, 255, 255, 0.9));
+  margin: 10px 0 0 0;
+  font-size: 0.9rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.btn-primary,
+.btn-secondary {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--theme-text-color, white);
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary:active,
+.btn-secondary:active {
+  transform: translateY(0);
 }
 
 .modal-actions {
@@ -229,7 +291,7 @@
 
 .cancel-button {
   background-color: rgba(255, 255, 255, 0.2);
-  color: white;
+  color: var(--theme-text-color, white);
 }
 
 .cancel-button:hover {
@@ -239,13 +301,13 @@
 }
 
 .create-button {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
   color: white;
 }
 
 .create-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .create-button:active,

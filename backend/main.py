@@ -4,12 +4,16 @@ from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import os
 
+# データベース初期化
+import database
+
 # ルーター
-from routers import auth, recipes, timers, fashion, home, upload
+from routers import auth, recipes, timers, fashion, home, upload, settings, records
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("🚀 アプリケーション起動")
+    print("✅ Cosmos DB 初期化完了")
     yield
     print("🛑 アプリケーション終了")
 
@@ -39,9 +43,11 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(recipes.router, prefix="/api/recipes", tags=["recipes"])
 app.include_router(timers.router, prefix="/api/timers", tags=["timers"])
+app.include_router(records.router)
 app.include_router(fashion.router, prefix="/api/fashion", tags=["fashion"])
 app.include_router(home.router, prefix="/api/home", tags=["home"])
 app.include_router(upload.router, prefix="/api/upload", tags=["upload"])
+app.include_router(settings.router, prefix="/api/settings", tags=["settings"])
 
 # 画像保存用ディレクトリ
 UPLOAD_DIR = "uploads"

@@ -1,7 +1,7 @@
 .timer-detail-container {
   min-height: 100vh;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--theme-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
   padding-bottom: 80px;
 }
 
@@ -11,7 +11,7 @@
 
 .back-button {
   background: rgba(255, 255, 255, 0.2);
-  color: white;
+  color: var(--theme-text-color, white);
   border: none;
   padding: 10px 20px;
   border-radius: 10px;
@@ -26,7 +26,7 @@
 }
 
 .detail-header h1 {
-  color: white;
+  color: var(--theme-text-color, white);
   font-size: 2rem;
   margin: 0;
 }
@@ -69,7 +69,7 @@
 }
 
 .stat-value {
-  color: #667eea;
+  color: var(--theme-primary, #667eea);
   font-size: 1.8rem;
   font-weight: 700;
 }
@@ -81,10 +81,49 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
+.records-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
 .records-section h2 {
   color: #333;
-  margin: 0 0 25px 0;
+  margin: 0;
   font-size: 1.5rem;
+}
+
+.tab-selector {
+  display: flex;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.tab-selector button {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: #666;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tab-selector button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.tab-selector button.active {
+  background: var(--theme-primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .empty-records {
@@ -121,7 +160,7 @@
   flex-shrink: 0;
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -153,9 +192,23 @@
 }
 
 .duration-value {
-  color: #667eea;
+  color: var(--theme-primary, #667eea);
   font-weight: 700;
   font-size: 1.1rem;
+}
+
+.record-tag {
+  margin-top: 5px;
+}
+
+.tag-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  background: linear-gradient(135deg, var(--theme-accent) 0%, var(--theme-primary) 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .loading,
@@ -186,16 +239,17 @@
   flex: 1;
   text-align: center;
   padding: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: rgba(255, 255, 255, 0.9);
+  color: #667eea;
   text-decoration: none;
   border-radius: 10px;
   font-weight: 600;
-  transition: transform 0.2s;
+  transition: all 0.2s;
 }
 
 .nav-item:hover {
   transform: translateY(-2px);
+  background: white;
 }
 
 /* レスポンシブ対応 */
@@ -219,6 +273,20 @@
 
   .records-section {
     padding: 20px;
+  }
+
+  .records-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tab-selector {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tab-selector button {
+    flex: 1;
   }
 
   .record-item {

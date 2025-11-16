@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { timerService } from '../services';
 import type { Timer, TimerRecord } from '../types';
+import RecordsGraph from '../components/RecordsGraph';
 import './TimerDetail.css';
 
 function TimerDetail() {
@@ -10,6 +11,8 @@ function TimerDetail() {
   const [timer, setTimer] = useState<Timer | null>(null);
   const [records, setRecords] = useState<TimerRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'list' | 'graph'>('list');
+  const [allTags, setAllTags] = useState<string[]>([]);
 
   useEffect(() => {
     if (id) {
@@ -20,14 +23,16 @@ function TimerDetail() {
   const loadTimerData = async () => {
     try {
       setLoading(true);
-      const [timerResponse, recordsResponse] = await Promise.all([
+      const [timerResponse, recordsResponse, tagsResponse] = await Promise.all([
         timerService.getAll(),
-        id ? timerService.getRecords(id) : Promise.resolve({ data: [] })
+        id ? timerService.getRecords(id) : Promise.resolve({ data: [] }),
+        timerService.getAllTags()
       ]);
       
       const foundTimer = timerResponse.data.find(t => t.id === id);
       setTimer(foundTimer || null);
       setRecords(recordsResponse.data);
+      setAllTags(tagsResponse.data.tags || []);
     } catch (error) {
       console.error('データの取得に失敗しました:', error);
     } finally {
@@ -102,17 +107,13 @@ function TimerDetail() {
       </header>
 
       <div className="timer-info">
-        {timer.imageUrl && (
+        {timer.image && (
           <div className="timer-hero-image">
-            <img src={timer.imageUrl} alt={timer.name} />
+            <img src={timer.image} alt={timer.name} />
           </div>
         )}
         
         <div className="stats-summary">
-          <div className="stat-card">
-            <div className="stat-label">総記録数</div>
-            <div className="stat-value">{records.length}回</div>
-          </div>
           <div className="stat-card">
             <div className="stat-label">総時間</div>
             <div className="stat-value">{getTotalDuration()}</div>
@@ -127,18 +128,33 @@ function TimerDetail() {
       </div>
 
       <div className="records-section">
-        <h2>⏱️ 記録一覧</h2>
+        <div className="records-header">
+          <h2>📊 記録</h2>
+          <div className="tab-selector">
+            <button
+              className={activeTab === 'list' ? 'active' : ''}
+              onClick={() => setActiveTab('list')}
+            >
+              📝 一覧
+            </button>
+            <button
+              className={activeTab === 'graph' ? 'active' : ''}
+              onClick={() => setActiveTab('graph')}
+            >
+              📈 グラフ
+            </button>
+          </div>
+        </div>
         
         {records.length === 0 ? (
           <div className="empty-records">
             <p>まだ記録がありません</p>
             <p>タイマーを実行すると記録が保存されます</p>
           </div>
-        ) : (
+        ) : activeTab === 'list' ? (
           <div className="records-list">
             {records.map((record, index) => (
               <div key={index} className="record-item">
-                <div className="record-number">#{records.length - index}</div>
                 <div className="record-details">
                   <div className="record-time">
                     <span className="record-label">開始:</span>
@@ -154,10 +170,17 @@ function TimerDetail() {
                       {formatDuration(record.startTime, record.endTime)}
                     </span>
                   </div>
+                  {record.tag && (
+                    <div className="record-tag">
+                      <span className="tag-badge">{record.tag}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
+        ) : (
+          <RecordsGraph records={records} allTags={allTags} />
         )}
       </div>
 

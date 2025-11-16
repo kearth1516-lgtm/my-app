@@ -41,10 +41,10 @@ const TimerRunning: React.FC<TimerRunningProps> = ({
 
   return (
     <div className="timer-running-overlay">
-      {timer.imageUrl && (
-        <div 
+      {timer.image && (
+        <div
           className="timer-running-background"
-          style={{ backgroundImage: `url(${timer.imageUrl})` }}
+          style={{ backgroundImage: `url(${timer.image})` }}
         />
       )}
       

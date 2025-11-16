@@ -1,0 +1,236 @@
+.manual-record-modal {
+  max-width: 500px;
+  width: 90%;
+}
+
+.manual-record-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(var(--theme-text-alpha), 0.1);
+}
+
+.manual-record-modal .modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--theme-text-color);
+}
+
+.manual-record-modal .modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: var(--theme-text-color);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.manual-record-modal .modal-close:hover {
+  background: rgba(var(--theme-text-alpha), 0.1);
+}
+
+.manual-record-modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.manual-record-modal .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.manual-record-modal .form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--theme-text-color);
+}
+
+.manual-record-modal .form-group select,
+.manual-record-modal .form-group input[type="datetime-local"] {
+  padding: 12px;
+  border: 2px solid rgba(var(--theme-text-alpha), 0.2);
+  border-radius: 8px;
+  font-size: 15px;
+  color: #333;
+  background: white;
+  transition: border-color 0.2s;
+}
+
+.manual-record-modal .form-group select:focus,
+.manual-record-modal .form-group input[type="datetime-local"]:focus {
+  outline: none;
+  border-color: var(--theme-primary);
+}
+
+/* 時間入力 */
+.time-inputs {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+}
+
+.time-input-group input {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid rgba(var(--theme-text-alpha), 0.2);
+  border-radius: 8px;
+  font-size: 15px;
+  color: #333;
+  text-align: center;
+  background: white;
+  transition: border-color 0.2s;
+}
+
+.time-input-group input:focus {
+  outline: none;
+  border-color: var(--theme-primary);
+}
+
+.time-input-group span {
+  font-size: 14px;
+  color: var(--theme-text-color);
+  white-space: nowrap;
+}
+
+/* タグ選択 */
+.tag-select-group {
+  display: flex;
+  gap: 10px;
+}
+
+.tag-select-group select {
+  flex: 1;
+}
+
+.new-tag-input {
+  display: flex;
+  gap: 8px;
+}
+
+.new-tag-input input {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid rgba(var(--theme-text-alpha), 0.2);
+  border-radius: 8px;
+  font-size: 15px;
+  color: #333;
+  background: white;
+}
+
+.new-tag-input input:focus {
+  outline: none;
+  border-color: var(--theme-primary);
+}
+
+.new-tag-input .btn-add-tag,
+.new-tag-input .btn-cancel-tag {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.new-tag-input .btn-add-tag {
+  background: var(--theme-primary);
+  color: white;
+}
+
+.new-tag-input .btn-add-tag:hover {
+  background: var(--theme-primary-dark);
+}
+
+.new-tag-input .btn-cancel-tag {
+  background: rgba(var(--theme-text-alpha), 0.1);
+  color: var(--theme-text-color);
+}
+
+.new-tag-input .btn-cancel-tag:hover {
+  background: rgba(var(--theme-text-alpha), 0.15);
+}
+
+/* モーダルアクション */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(var(--theme-text-alpha), 0.1);
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-actions .btn-cancel {
+  background: rgba(var(--theme-text-alpha), 0.1);
+  color: var(--theme-text-color);
+}
+
+.modal-actions .btn-cancel:hover {
+  background: rgba(var(--theme-text-alpha), 0.15);
+}
+
+.modal-actions .btn-submit {
+  background: var(--theme-primary);
+  color: white;
+}
+
+.modal-actions .btn-submit:hover {
+  background: var(--theme-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .manual-record-modal {
+    max-width: 95%;
+  }
+
+  .time-inputs {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .time-input-group {
+    width: 100%;
+  }
+
+  .new-tag-input {
+    flex-direction: column;
+  }
+
+  .new-tag-input .btn-add-tag,
+  .new-tag-input .btn-cancel-tag {
+    width: 100%;
+  }
+}

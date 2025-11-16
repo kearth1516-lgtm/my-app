@@ -1,0 +1,213 @@
+.save-record-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3500;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-in;
+}
+
+.save-record-content {
+  background: white;
+  border-radius: 20px;
+  padding: 0;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.save-record-header {
+  padding: 25px 30px;
+  background: var(--theme-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+}
+
+.save-record-header h3 {
+  margin: 0;
+  color: var(--theme-text-color, white);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.save-record-body {
+  padding: 30px;
+}
+
+.record-info {
+  margin-bottom: 25px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8edf3 100%);
+  border-radius: 15px;
+}
+
+.timer-name {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.record-duration {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.tag-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tag-selection label {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.tag-select,
+.new-tag-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.tag-select:focus,
+.new-tag-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.tag-select {
+  cursor: pointer;
+  background: white;
+}
+
+.add-new-tag-button,
+.cancel-new-tag-button {
+  padding: 10px 16px;
+  border: 2px dashed #667eea;
+  background: transparent;
+  color: #667eea;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-new-tag-button:hover,
+.cancel-new-tag-button:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-style: solid;
+}
+
+.save-record-actions {
+  display: flex;
+  gap: 15px;
+  padding: 0 30px 30px 30px;
+}
+
+.cancel-button,
+.save-button {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cancel-button {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.save-button {
+  background: var(--theme-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+  color: var(--theme-text-color, white);
+}
+
+.save-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.save-button:active,
+.cancel-button:active {
+  transform: translateY(0);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .save-record-content {
+    max-width: 90%;
+  }
+
+  .save-record-header {
+    padding: 20px 25px;
+  }
+
+  .save-record-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .save-record-body {
+    padding: 25px;
+  }
+
+  .record-info {
+    padding: 15px;
+  }
+
+  .timer-name {
+    font-size: 1.1rem;
+  }
+
+  .record-duration {
+    font-size: 1.3rem;
+  }
+
+  .save-record-actions {
+    padding: 0 25px 25px 25px;
+  }
+}

@@ -108,23 +108,24 @@
 }
 
 .pause-button {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, var(--theme-accent) 0%, var(--theme-primary) 100%);
   flex: 1;
 }
 
 .pause-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 25px rgba(240, 147, 251, 0.5);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
 }
 
 .stop-button {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  background: var(--theme-danger, #ff6b6b);
   flex: 1;
 }
 
 .stop-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 25px rgba(255, 107, 107, 0.5);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+  filter: brightness(0.9);
 }
 
 .control-button:active {

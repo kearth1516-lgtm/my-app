@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import type { DropResult } from '@hello-pangea/dnd';
 import { timerService } from '../services';
 import type { Timer } from '../types';
 import CreateTimerModal from '../components/CreateTimerModal';
+import EditTimerModal from '../components/EditTimerModal';
 import ConfirmModal from '../components/ConfirmModal';
 import TimerRunning from '../components/TimerRunning';
+import SaveRecordModal from '../components/SaveRecordModal';
 import './Timers.css';
 
 function Timers() {
@@ -14,12 +18,22 @@ function Timers() {
   const [activeTimer, setActiveTimer] = useState<string | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [remainingTime, setRemainingTime] = useState<{ [key: string]: number }>({});
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [saveRecordModal, setSaveRecordModal] = useState<{
+    isOpen: boolean;
+    timerId: string | null;
+    timerName: string;
+    duration: number;
+  }>({ isOpen: false, timerId: null, timerName: '', duration: 0 });
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; timerId: string | null; timerName: string }>({ 
     isOpen: false, 
     timerId: null, 
     timerName: '' 
   });
+  const [editTimer, setEditTimer] = useState<Timer | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     loadTimers();
@@ -58,8 +72,12 @@ function Timers() {
   const loadTimers = async () => {
     try {
       setLoading(true);
-      const response = await timerService.getAll();
-      setTimers(response.data);
+      const [timersResponse, tagsResponse] = await Promise.all([
+        timerService.getAll(),
+        timerService.getAllTags()
+      ]);
+      setTimers(timersResponse.data);
+      setAvailableTags(tagsResponse.data.tags);
     } catch (error) {
       console.error('タイマーの取得に失敗しました:', error);
     } finally {
@@ -82,19 +100,19 @@ function Timers() {
   };
 
   const handleStopTimer = async (timerId: string) => {
-    try {
-      await timerService.stop(timerId);
-      setActiveTimer(null);
-      setIsPaused(false);
-      setRemainingTime((prev) => {
-        const updated = { ...prev };
-        delete updated[timerId];
-        return updated;
-      });
-      loadTimers(); // 記録を更新
-    } catch (error) {
-      console.error('タイマーの停止に失敗しました:', error);
-    }
+    const timer = timers.find(t => t.id === timerId);
+    if (!timer) return;
+
+    const duration = timer.type === 'stopwatch' 
+      ? remainingTime[timerId] || 0
+      : timer.duration - (remainingTime[timerId] || 0);
+
+    setSaveRecordModal({
+      isOpen: true,
+      timerId,
+      timerName: timer.name,
+      duration
+    });
   };
 
   const handlePauseTimer = () => {
@@ -107,7 +125,7 @@ function Timers() {
     loadTimers();
   };
 
-  const handleCreateTimer = async (timerData: { name: string; duration: number; imageUrl: string; type: 'countdown' | 'stopwatch' }) => {
+  const handleCreateTimer = async (timerData: { name: string; duration: number; image: string; type: 'countdown' | 'stopwatch' }) => {
     try {
       await timerService.create(timerData);
       await loadTimers();
@@ -139,6 +157,107 @@ function Timers() {
     setDeleteConfirm({ isOpen: false, timerId: null, timerName: '' });
   };
 
+  const handleSaveRecord = async (tag?: string) => {
+    if (!saveRecordModal.timerId) return;
+    
+    try {
+      await timerService.stop(saveRecordModal.timerId, tag);
+      
+      setActiveTimer(null);
+      setIsPaused(false);
+      setRemainingTime((prev) => {
+        const updated = { ...prev };
+        delete updated[saveRecordModal.timerId!];
+        return updated;
+      });
+      
+      setSaveRecordModal({ isOpen: false, timerId: null, timerName: '', duration: 0 });
+      loadTimers();
+    } catch (error) {
+      console.error('記録の保存に失敗しました:', error);
+      alert('記録の保存に失敗しました');
+    }
+  };
+
+  const handleCancelRecord = async () => {
+    if (!saveRecordModal.timerId) return;
+    
+    try {
+      await timerService.stop(saveRecordModal.timerId);
+      
+      setActiveTimer(null);
+      setIsPaused(false);
+      setRemainingTime((prev) => {
+        const updated = { ...prev };
+        delete updated[saveRecordModal.timerId!];
+        return updated;
+      });
+      
+      setSaveRecordModal({ isOpen: false, timerId: null, timerName: '', duration: 0 });
+      loadTimers();
+    } catch (error) {
+      console.error('タイマーの停止に失敗しました:', error);
+      alert('タイマーの停止に失敗しました');
+    }
+  };
+
+  const handleAddTag = async (newTag: string) => {
+    try {
+      await timerService.addTag(newTag);
+      const response = await timerService.getAllTags();
+      setAvailableTags(response.data.tags);
+    } catch (error) {
+      console.error('タグの追加に失敗しました:', error);
+      alert('タグの追加に失敗しました');
+    }
+  };
+
+  const handleEditTimer = (timer: Timer) => {
+    setEditTimer(timer);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateTimer = async (timerId: string, updates: { name?: string; duration?: number; image?: string }) => {
+    try {
+      await timerService.update(timerId, updates);
+      await loadTimers();
+      setIsEditModalOpen(false);
+      setEditTimer(null);
+    } catch (error) {
+      console.error('タイマーの更新に失敗しました:', error);
+      alert('タイマーの更新に失敗しました');
+    }
+  };
+
+  const handleToggleFavorite = async (timerId: string) => {
+    try {
+      await timerService.toggleFavorite(timerId);
+      await loadTimers();
+    } catch (error) {
+      console.error('お気に入りの切り替えに失敗しました:', error);
+      alert('お気に入りの切り替えに失敗しました');
+    }
+  };
+
+  const handleDragEnd = async (result: DropResult) => {
+    if (!result.destination) return;
+    if (result.source.index === result.destination.index) return;
+
+    const allItems = Array.from(timers);
+    const [reorderedItem] = allItems.splice(result.source.index, 1);
+    allItems.splice(result.destination.index, 0, reorderedItem);
+
+    setTimers(allItems);
+
+    try {
+      const timerIds = allItems.map(timer => timer.id!).filter(Boolean);
+      await timerService.reorder(timerIds);
+    } catch (error) {
+      console.error('並び順の保存に失敗しました:', error);
+      await loadTimers();
+    }
+  };
+
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -164,9 +283,18 @@ function Timers() {
 
       <header className="timers-header">
         <h1>⏱️ タイマー</h1>
-        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
-          ＋ 新規作成
-        </button>
+        <div className="header-actions">
+          <button 
+            className={`btn-filter ${showFavoritesOnly ? 'active' : ''}`}
+            onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+            title={showFavoritesOnly ? 'すべて表示' : 'お気に入りのみ表示'}
+          >
+            {showFavoritesOnly ? '⭐ お気に入りのみ' : '☆ すべて'}
+          </button>
+          <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
+            ＋ 新規作成
+          </button>
+        </div>
       </header>
 
       {loading ? (
@@ -178,20 +306,158 @@ function Timers() {
             最初のタイマーを作成
           </button>
         </div>
-      ) : (
-        <div className="timers-grid">
-          {timers.map((timer) => (
-            <div key={timer.id} className="timer-card">
-              <button 
-                className="delete-timer-btn"
-                onClick={() => timer.id && handleDeleteTimer(timer.id, timer.name)}
-                title="削除"
-              >
-                ×
-              </button>
-              {timer.imageUrl && (
+      ) : (() => {
+        const displayedTimers = showFavoritesOnly 
+          ? timers.filter(timer => timer.isFavorite)
+          : timers;
+
+        if (displayedTimers.length === 0) {
+          return (
+            <div className="empty-state">
+              <p>お気に入りのタイマーがありません</p>
+            </div>
+          );
+        }
+
+        // フィルター表示時はドラッグ&ドロップ無効
+        if (showFavoritesOnly) {
+          return (
+            <div className="timers-grid">
+              {displayedTimers.map((timer) => (
+                <div key={timer.id} className="timer-card">
+                  <div className="timer-card-header">
+                    <button
+                      className="favorite-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        timer.id && handleToggleFavorite(timer.id);
+                      }}
+                      title={timer.isFavorite ? 'お気に入り解除' : 'お気に入り登録'}
+                    >
+                      {timer.isFavorite ? '⭐' : '☆'}
+                    </button>
+                    {timer.type !== 'stopwatch' && (
+                      <button 
+                        className="delete-timer-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          timer.id && handleDeleteTimer(timer.id, timer.name);
+                        }}
+                        title="削除"
+                      >
+                        ×
+                      </button>
+                    )}
+                    <button
+                      className="edit-timer-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditTimer(timer);
+                      }}
+                      title="編集"
+                    >
+                      ✏️
+                    </button>
+                  </div>
+                  {timer.image && (
+                    <div className="timer-image">
+                      <img src={timer.image} alt={timer.name} />
+                    </div>
+                  )}
+                  <div className="timer-content">
+                    <div className="timer-header">
+                      <h3 
+                        onClick={() => timer.id && navigate(`/timers/${timer.id}`)}
+                        style={{ cursor: 'pointer' }}
+                        title="詳細を見る"
+                      >
+                        {timer.name}
+                      </h3>
+                    </div>
+                    <div className="timer-display">
+                      {activeTimer === timer.id && timer.id
+                        ? formatTime(remainingTime[timer.id] || 0)
+                        : timer.type === 'stopwatch' ? '00:00:00' : formatTime(timer.duration)}
+                    </div>
+                    <div className="timer-actions">
+                      {activeTimer === timer.id ? (
+                        <button
+                          className="btn-stop"
+                          onClick={() => timer.id && handleStopTimer(timer.id)}
+                        >
+                          停止
+                        </button>
+                      ) : (
+                        <button className="btn-start" onClick={() => handleStartTimer(timer)}>
+                          開始
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        }
+
+        // 全表示時のみドラッグ&ドロップ有効
+        return (
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="timers" direction="horizontal">
+              {(provided) => (
+                <div 
+                  className="timers-grid"
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
+                  {displayedTimers.map((timer, index) => (
+                    <Draggable key={timer.id} draggableId={timer.id!} index={index}>
+                      {(provided, snapshot) => (
+                        <div 
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={`timer-card ${snapshot.isDragging ? 'dragging' : ''}`}
+                        >
+                          <div className="timer-card-header">
+                            <button
+                              className="favorite-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                timer.id && handleToggleFavorite(timer.id);
+                              }}
+                              title={timer.isFavorite ? 'お気に入り解除' : 'お気に入り登録'}
+                            >
+                              {timer.isFavorite ? '⭐' : '☆'}
+                            </button>
+                            <div className="drag-handle" {...provided.dragHandleProps}>
+                              ⋮⋮
+                            </div>
+                            {timer.type !== 'stopwatch' && (
+                              <button 
+                                className="delete-timer-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  timer.id && handleDeleteTimer(timer.id, timer.name);
+                                }}
+                                title="削除"
+                              >
+                                ×
+                              </button>
+                            )}
+                            <button
+                              className="edit-timer-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditTimer(timer);
+                              }}
+                              title="編集"
+                            >
+                              ✏️
+                            </button>
+                          </div>
+              {timer.image && (
                 <div className="timer-image">
-                  <img src={timer.imageUrl} alt={timer.name} />
+                  <img src={timer.image} alt={timer.name} />
                 </div>
               )}
               <div className="timer-content">
@@ -203,9 +469,6 @@ function Timers() {
                   >
                     {timer.name}
                   </h3>
-                  <span className={`timer-type-badge ${timer.type || 'countdown'}`}>
-                    {timer.type === 'stopwatch' ? 'ストップウォッチ' : 'カウントダウン'}
-                  </span>
                 </div>
                 <div className="timer-display">
                   {activeTimer === timer.id && timer.id
@@ -226,18 +489,25 @@ function Timers() {
                     </button>
                   )}
                 </div>
-                <div className="timer-stats">
-                  <span>記録: {timer.records.length}回</span>
-                </div>
               </div>
+                        </div>
+                      )}
+                    </Draggable>
+              ))}
+              {provided.placeholder}
             </div>
-          ))}
-        </div>
-      )}
+          )}
+        </Droppable>
+      </DragDropContext>
+    );
+  })()}
 
       <nav className="bottom-nav">
         <a href="/" className="nav-item">
           🏠 ホーム
+        </a>
+        <a href="/records" className="nav-item">
+          📊 記録
         </a>
       </nav>
 
@@ -245,6 +515,28 @@ function Timers() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateTimer}
+      />
+
+      {editTimer && (
+        <EditTimerModal
+          isOpen={isEditModalOpen}
+          timer={editTimer}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditTimer(null);
+          }}
+          onSubmit={handleUpdateTimer}
+        />
+      )}
+
+      <SaveRecordModal
+        isOpen={saveRecordModal.isOpen}
+        timerName={saveRecordModal.timerName}
+        duration={saveRecordModal.duration}
+        availableTags={availableTags}
+        onSave={handleSaveRecord}
+        onCancel={handleCancelRecord}
+        onAddTag={handleAddTag}
       />
 
       <ConfirmModal

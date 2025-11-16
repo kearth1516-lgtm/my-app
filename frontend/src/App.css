@@ -1,3 +1,14 @@
+:root {
+  --theme-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --theme-text-color: #fff;
+  --theme-text-alpha: rgba(255, 255, 255, 0.8);
+  --theme-primary: #8b5cf6;
+  --theme-primary-dark: #7c3aed;
+  --theme-accent: #a78bfa;
+  --theme-success: #9333ea;
+  --theme-danger: #ef4444;
+}
+
 #root {
   width: 100%;
   min-height: 100vh;

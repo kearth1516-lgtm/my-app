@@ -1,13 +1,14 @@
 .home-container {
   min-height: 100vh;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--theme-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+  color: var(--theme-text-color, white);
 }
 
 .home-header {
   text-align: center;
   margin-bottom: 30px;
+  position: relative;
 }
 
 .home-header h1 {
@@ -18,6 +19,27 @@
 .home-header p {
   font-size: 1.2rem;
   opacity: 0.9;
+}
+
+.settings-link {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 1.8rem;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.2);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.settings-link:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
 }
 
 .home-image-container {
@@ -53,16 +75,18 @@
 .no-image button {
   margin-top: 15px;
   padding: 10px 30px;
-  background: #667eea;
-  color: white;
+  background: rgba(255, 255, 255, 0.9);
+  color: #667eea;
   border: none;
   border-radius: 25px;
   font-size: 1rem;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
 .no-image button:hover {
-  background: #5568d3;
+  background: white;
+  transform: translateY(-2px);
 }
 
 .home-menu {
@@ -80,7 +104,7 @@
   padding: 30px 20px;
   text-align: center;
   text-decoration: none;
-  color: white;
+  color: var(--theme-text-color, white);
   transition: transform 0.3s, background 0.3s;
 }
 

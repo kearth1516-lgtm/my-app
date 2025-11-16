@@ -15,14 +15,21 @@ export interface Timer {
   id?: string;
   name: string;
   duration: number;
-  imageUrl?: string;
-  records: TimerRecord[];
+  image?: string;
   type?: 'countdown' | 'stopwatch'; // カウントダウンまたはストップウォッチ
+  order?: number;
+  isFavorite?: boolean;
 }
 
 export interface TimerRecord {
+  id: string;
+  timerId: string;
+  timerName: string;
   startTime: string;
   endTime: string;
+  duration: number; // 秒単位
+  tag?: string; // タグ（英語、数学、筋トレなど）
+  date: string; // YYYY-MM-DD形式
 }
 
 export interface FashionItem {

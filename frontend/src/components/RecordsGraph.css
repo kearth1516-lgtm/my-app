@@ -1,0 +1,392 @@
+.records-graph-container {
+  width: 100%;
+  padding: 20px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* コントロールパネル */
+.graph-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.view-mode-selector {
+  display: flex;
+  gap: 10px;
+  background: rgba(var(--theme-text-alpha), 0.05);
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.view-mode-selector button {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: #333;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.view-mode-selector button:hover {
+  background: rgba(var(--theme-text-alpha), 0.1);
+}
+
+.view-mode-selector button.active {
+  background: var(--theme-primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.tag-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tag-filter label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.tag-filter select {
+  padding: 10px 15px;
+  border: 2px solid rgba(var(--theme-text-alpha), 0.2);
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.tag-filter select:focus {
+  outline: none;
+  border-color: var(--theme-primary);
+}
+
+/* 期間ナビゲーション */
+.period-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8edf3 100%);
+  border-radius: 10px;
+}
+
+.period-nav-btn {
+  padding: 10px 20px;
+  border: none;
+  background: white;
+  color: #333;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.period-nav-btn:hover {
+  background: var(--theme-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.period-label {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* グラフエリア */
+.graph-wrapper {
+  margin-bottom: 30px;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 20px 10px 10px;
+}
+
+.graph-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 15px;
+  min-height: 300px;
+  position: relative;
+  padding-bottom: 40px;
+}
+
+.bar-item {
+  flex: 1;
+  min-width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.bar-wrapper {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bar {
+  width: 100%;
+  max-width: 80px;
+  position: relative;
+  transition: all 0.3s;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10px;
+  min-height: 30px;
+}
+
+.bar:hover {
+  filter: brightness(1.1);
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* データが0の場合の表示 */
+.bar-empty {
+  width: 100%;
+  max-width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+}
+
+.bar-value-empty {
+  font-size: 12px;
+  font-weight: 600;
+  color: #999;
+}
+
+/* 積み上げ棒グラフ用のスタイル */
+.bar-stacked {
+  width: 100%;
+  max-width: 80px;
+  position: relative;
+  transition: all 0.3s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  min-height: 30px;
+}
+
+.bar-stacked:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.bar-segment {
+  width: 100%;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.bar-segment:hover {
+  filter: brightness(1.2);
+}
+
+.bar-stacked .bar-value {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+/* タグの凡例 */
+.tag-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  padding: 20px;
+  margin-bottom: 20px;
+  background: rgba(var(--theme-text-alpha), 0.03);
+  border-radius: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.legend-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+}
+
+.bar-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  position: sticky;
+  top: 10px;
+}
+
+.bar-label {
+  font-size: 12px;
+  color: #333;
+  text-align: center;
+  font-weight: 500;
+  word-break: keep-all;
+  white-space: nowrap;
+}
+
+/* 統計サマリー */
+.graph-summary {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8edf3 100%);
+  border-radius: 10px;
+  flex-wrap: wrap;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.summary-label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--theme-primary);
+}
+
+/* 空の状態 */
+.empty-graph,
+.no-data {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+.empty-graph p:first-child,
+.no-data p:first-child {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.empty-graph p:last-child,
+.no-data p:last-child {
+  font-size: 16px;
+  color: #666;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .records-graph-container {
+    padding: 15px;
+  }
+
+  .graph-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .view-mode-selector {
+    justify-content: center;
+  }
+
+  .view-mode-selector button {
+    padding: 8px 15px;
+    font-size: 13px;
+  }
+
+  .tag-filter {
+    justify-content: center;
+  }
+
+  .period-navigation {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .period-nav-btn {
+    width: 100%;
+  }
+
+  .period-label {
+    font-size: 14px;
+  }
+
+  .graph-bars {
+    gap: 10px;
+    min-height: 250px;
+  }
+
+  .bar-item {
+    min-width: 50px;
+  }
+
+  .bar-wrapper {
+    height: 250px;
+  }
+
+  .bar {
+    max-width: 60px;
+  }
+
+  .bar-value {
+    font-size: 10px;
+  }
+
+  .bar-label {
+    font-size: 11px;
+  }
+
+  .summary-value {
+    font-size: 18px;
+  }
+}

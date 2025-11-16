@@ -74,12 +74,12 @@
 
 .confirm-modal-header {
   padding: 25px 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--theme-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
 }
 
 .confirm-modal-header h3 {
   margin: 0;
-  color: white;
+  color: var(--theme-text-color, white);
   font-size: 1.3rem;
   font-weight: 600;
 }
@@ -125,8 +125,8 @@
 }
 
 .confirm-action-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--theme-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+  color: var(--theme-text-color, white);
 }
 
 .confirm-action-button.dangerous {

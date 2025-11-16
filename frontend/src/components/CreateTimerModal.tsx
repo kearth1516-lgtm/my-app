@@ -4,16 +4,15 @@ import './CreateTimerModal.css';
 interface CreateTimerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (timer: { name: string; duration: number; imageUrl: string; type: 'countdown' | 'stopwatch' }) => void;
+  onSubmit: (timer: { name: string; duration: number; image: string; type: 'countdown' | 'stopwatch' }) => void;
 }
 
 const CreateTimerModal: React.FC<CreateTimerModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [name, setName] = useState('');
-  const [type, setType] = useState<'countdown' | 'stopwatch'>('countdown');
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
-  const [imageUrl, setImageUrl] = useState('/images/mogu.jpg');
+  const [image, setImage] = useState('/images/mogu.jpg');
   const [uploading, setUploading] = useState(false);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +40,7 @@ const CreateTimerModal: React.FC<CreateTimerModalProps> = ({ isOpen, onClose, on
       }
 
       const data = await response.json();
-      setImageUrl(`http://localhost:8000${data.url}`);
+      setImage(`http://localhost:8000${data.url}`);
     } catch (error) {
       console.error('画像アップロードエラー:', error);
       alert('画像のアップロードに失敗しました');
@@ -60,37 +59,34 @@ const CreateTimerModal: React.FC<CreateTimerModalProps> = ({ isOpen, onClose, on
       return;
     }
     
-    // ストップウォッチは時間設定不要
-    if (type === 'countdown' && duration <= 0) {
+    if (duration <= 0) {
       alert('時間を設定してください');
       return;
     }
     
     onSubmit({
       name: name.trim(),
-      duration: type === 'stopwatch' ? 0 : duration,
-      imageUrl: imageUrl.trim() || '/images/mogu.jpg',
-      type
+      duration,
+      image: image.trim() || '/images/mogu.jpg',
+      type: 'countdown'
     });
     
     // リセット
     setName('');
-    setType('countdown');
     setHours(0);
     setMinutes(0);
     setSeconds(0);
-    setImageUrl('/images/mogu.jpg');
+    setImage('/images/mogu.jpg');
     onClose();
   };
 
   const handleCancel = () => {
     // リセット
     setName('');
-    setType('countdown');
     setHours(0);
     setMinutes(0);
     setSeconds(0);
-    setImageUrl('/images/mogu.jpg');
+    setImage('/images/mogu.jpg');
     onClose();
   };
 
@@ -120,55 +116,40 @@ const CreateTimerModal: React.FC<CreateTimerModalProps> = ({ isOpen, onClose, on
           </div>
 
           <div className="form-group">
-            <label htmlFor="timer-type">タイプ</label>
-            <select
-              id="timer-type"
-              value={type}
-              onChange={(e) => setType(e.target.value as 'countdown' | 'stopwatch')}
-              className="timer-type-select"
-            >
-              <option value="countdown">カウントダウン（設定時間から減算）</option>
-              <option value="stopwatch">ストップウォッチ（0から計測）</option>
-            </select>
-          </div>
-
-          {type === 'countdown' && (
-            <div className="form-group">
-              <label>時間設定</label>
-              <div className="time-inputs">
-                <div className="time-input-group">
-                  <input
-                    type="number"
-                    value={hours}
-                    onChange={(e) => setHours(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))}
-                    min="0"
-                    max="23"
-                  />
-                  <span>時間</span>
-                </div>
-                <div className="time-input-group">
-                  <input
-                    type="number"
-                    value={minutes}
-                    onChange={(e) => setMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                    min="0"
-                    max="59"
-                  />
-                  <span>分</span>
-                </div>
-                <div className="time-input-group">
-                  <input
-                    type="number"
-                    value={seconds}
-                    onChange={(e) => setSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-                    min="0"
-                    max="59"
-                  />
-                  <span>秒</span>
-                </div>
+            <label>時間設定</label>
+            <div className="time-inputs">
+              <div className="time-input-group">
+                <input
+                  type="number"
+                  value={hours}
+                  onChange={(e) => setHours(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))}
+                  min="0"
+                  max="23"
+                />
+                <span>時間</span>
+              </div>
+              <div className="time-input-group">
+                <input
+                  type="number"
+                  value={minutes}
+                  onChange={(e) => setMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                  min="0"
+                  max="59"
+                />
+                <span>分</span>
+              </div>
+              <div className="time-input-group">
+                <input
+                  type="number"
+                  value={seconds}
+                  onChange={(e) => setSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                  min="0"
+                  max="59"
+                />
+                <span>秒</span>
               </div>
             </div>
-          )}
+          </div>
 
           <div className="form-group">
             <label>画像選択</label>
@@ -184,7 +165,7 @@ const CreateTimerModal: React.FC<CreateTimerModalProps> = ({ isOpen, onClose, on
           <div className="preview-section">
             <label>プレビュー</label>
             <img 
-              src={imageUrl} 
+              src={image} 
               alt="プレビュー" 
               className="image-preview"
               onError={(e) => {
