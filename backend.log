@@ -40,3 +40,81 @@ INFO:     127.0.0.1:46046 - "GET /api/records/ HTTP/1.1" 200 OK
 INFO:     127.0.0.1:46038 - "GET /api/timers/ HTTP/1.1" 200 OK
 INFO:     127.0.0.1:46038 - "GET /api/records HTTP/1.1" 307 Temporary Redirect
 INFO:     127.0.0.1:46038 - "GET /api/records/ HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'routers/timers.py', 'routers/records.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [66889]
+🛑 アプリケーション終了
+INFO:     Started server process [69170]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'routers/settings.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [69170]
+Database 'my-app-db' initialized
+Container 'timers' initialized
+Container 'tags' initialized
+Container 'settings' initialized
+Container 'records' initialized
+Settings already exist
+Stopwatch timer already exists
+🚀 アプリケーション起動
+✅ Cosmos DB 初期化完了
+🛑 アプリケーション終了
+INFO:     Started server process [69379]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'routers/settings.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [69379]
+Database 'my-app-db' initialized
+Container 'timers' initialized
+Container 'tags' initialized
+Container 'settings' initialized
+Container 'records' initialized
+Settings already exist
+Stopwatch timer already exists
+🚀 アプリケーション起動
+✅ Cosmos DB 初期化完了
+🛑 アプリケーション終了
+INFO:     Started server process [69410]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'routers/settings.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [69410]
+Database 'my-app-db' initialized
+Container 'timers' initialized
+Container 'tags' initialized
+Container 'settings' initialized
+Container 'records' initialized
+Settings already exist
+Stopwatch timer already exists
+🚀 アプリケーション起動
+✅ Cosmos DB 初期化完了
+🛑 アプリケーション終了
+INFO:     Started server process [69448]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [69448]
+Database 'my-app-db' initialized
+Container 'timers' initialized
+Container 'tags' initialized
+Container 'settings' initialized
+Container 'records' initialized
+Settings already exist
+Stopwatch timer already exists
+🚀 アプリケーション起動
+✅ Cosmos DB 初期化完了
+🛑 アプリケーション終了
+INFO:     Stopping reloader process [66885]

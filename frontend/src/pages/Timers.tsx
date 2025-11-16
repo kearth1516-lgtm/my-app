@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DropResult } from '@hello-pangea/dnd';
-import { timerService } from '../services';
+import { timerService, settingsService } from '../services';
+import { playAlertSound, type SoundType } from '../utils/audio';
 import type { Timer } from '../types';
 import CreateTimerModal from '../components/CreateTimerModal';
 import EditTimerModal from '../components/EditTimerModal';
@@ -34,6 +35,12 @@ function Timers() {
   });
   const [editTimer, setEditTimer] = useState<Timer | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [timerCompleteModal, setTimerCompleteModal] = useState<{ 
+    isOpen: boolean; 
+    timerId: string | null;
+    isAutoComplete: boolean;
+  }>({ isOpen: false, timerId: null, isAutoComplete: false });
+  const [stopAlertSound, setStopAlertSound] = useState<(() => void) | null>(null);
 
   useEffect(() => {
     loadTimers();
@@ -45,6 +52,9 @@ function Timers() {
     const interval = setInterval(() => {
       setRemainingTime((prev) => {
         const updated = { ...prev };
+        let shouldComplete = false;
+        let completeTimerId: string | null = null;
+
         Object.keys(updated).forEach((id) => {
           const timer = timers.find(t => t.id === id);
           if (!timer) return;
@@ -53,21 +63,27 @@ function Timers() {
             // ストップウォッチはカウントアップ
             updated[id] += 1;
           } else {
-            // カウントダウン
-            if (updated[id] > 0) {
-              updated[id] -= 1;
-            } else if (updated[id] === 0 && activeTimer === id) {
-              // タイマー終了
-              handleTimerComplete();
+            // カウントダウン：0になってもマイナスで続ける
+            if (updated[id] === 0 && activeTimer === id && !timerCompleteModal.isOpen) {
+              // タイマー終了（モーダルは表示されていない）
+              shouldComplete = true;
+              completeTimerId = id;
             }
+            updated[id] -= 1;
           }
         });
+
+        // タイマー終了処理（setIntervalの外で実行）
+        if (shouldComplete && completeTimerId) {
+          setTimeout(() => handleTimerComplete(completeTimerId!), 0);
+        }
+
         return updated;
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [activeTimer, isPaused, timers]);
+  }, [activeTimer, isPaused, timers, timerCompleteModal.isOpen]);
 
   const loadTimers = async () => {
     try {
@@ -103,9 +119,15 @@ function Timers() {
     const timer = timers.find(t => t.id === timerId);
     if (!timer) return;
 
+    // アクティブタイマーをクリア（TimerRunningを非表示に）
+    setActiveTimer(null);
+
+    const remaining = remainingTime[timerId] || 0;
     const duration = timer.type === 'stopwatch' 
-      ? remainingTime[timerId] || 0
-      : timer.duration - (remainingTime[timerId] || 0);
+      ? remaining
+      : remaining >= 0 
+        ? timer.duration - remaining
+        : timer.duration + Math.abs(remaining);
 
     setSaveRecordModal({
       isOpen: true,
@@ -119,10 +141,74 @@ function Timers() {
     setIsPaused(!isPaused);
   };
 
-  const handleTimerComplete = () => {
-    alert('⏰ タイマー終了！お疲れ様でした！');
+  const handleTimerComplete = async (timerId: string) => {
+    // アクティブタイマーをクリア（TimerRunningを非表示に）
     setActiveTimer(null);
-    loadTimers();
+    
+    // アラート音を繰り返し再生（5秒間）
+    try {
+      const settingsResponse = await settingsService.get();
+      const { soundEnabled, soundVolume, soundType } = settingsResponse.data;
+      
+      if (soundEnabled) {
+        const stopFn = playAlertSound((soundType as SoundType) || 'beep', soundVolume || 0.5, 5000);
+        setStopAlertSound(() => stopFn);
+      }
+    } catch (error) {
+      console.error('設定の取得に失敗しました:', error);
+    }
+    
+    // モーダル表示（自動終了）
+    setTimerCompleteModal({ isOpen: true, timerId, isAutoComplete: true });
+  };
+
+  const handleTimerCompleteConfirm = () => {
+    const { timerId, isAutoComplete } = timerCompleteModal;
+    setTimerCompleteModal({ isOpen: false, timerId: null, isAutoComplete: false });
+    
+    // アラート音を停止
+    if (stopAlertSound) {
+      stopAlertSound();
+      setStopAlertSound(null);
+    }
+    
+    if (isAutoComplete && timerId) {
+      // 自動終了の場合は記録保存モーダルを表示
+      const timer = timers.find(t => t.id === timerId);
+      if (timer && !saveRecordModal.isOpen) {
+        // 経過時間を計算（マイナスの場合は絶対値）
+        const remaining = remainingTime[timerId] || 0;
+        const duration = timer.type === 'stopwatch' 
+          ? remaining
+          : timer.duration + Math.abs(Math.min(remaining, 0));
+        
+        setSaveRecordModal({
+          isOpen: true,
+          timerId,
+          timerName: timer.name,
+          duration
+        });
+      }
+    } else {
+      // 手動停止の場合はそのまま終了
+      loadTimers();
+    }
+  };
+
+  const handleTimerCompleteCancel = () => {
+    const { timerId } = timerCompleteModal;
+    setTimerCompleteModal({ isOpen: false, timerId: null, isAutoComplete: false });
+    
+    // アラート音を停止
+    if (stopAlertSound) {
+      stopAlertSound();
+      setStopAlertSound(null);
+    }
+    
+    // タイマーを再開（マイナスカウントを続ける）
+    if (timerId) {
+      setActiveTimer(timerId);
+    }
   };
 
   const handleCreateTimer = async (timerData: { name: string; duration: number; image: string; type: 'countdown' | 'stopwatch' }) => {
@@ -259,12 +345,15 @@ function Timers() {
   };
 
   const formatTime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes
+    const isNegative = seconds < 0;
+    const absSeconds = Math.abs(seconds);
+    const hours = Math.floor(absSeconds / 3600);
+    const minutes = Math.floor((absSeconds % 3600) / 60);
+    const secs = absSeconds % 60;
+    const timeString = `${hours.toString().padStart(2, '0')}:${minutes
       .toString()
       .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return isNegative ? `-${timeString}` : timeString;
   };
 
   return (
@@ -548,6 +637,16 @@ function Timers() {
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
         isDangerous={true}
+      />
+
+      <ConfirmModal
+        isOpen={timerCompleteModal.isOpen}
+        title="⏰ タイマー終了"
+        message="お疲れ様でした！"
+        confirmText="OK"
+        cancelText="続ける"
+        onConfirm={handleTimerCompleteConfirm}
+        onCancel={handleTimerCompleteCancel}
       />
     </div>
   );

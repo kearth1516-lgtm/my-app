@@ -50,8 +50,8 @@ export const authService = {
 
 // 設定API
 export const settingsService = {
-  get: () => api.get<{ theme: string }>('/settings'),
-  update: (settings: { theme: string }) => api.put('/settings', settings),
+  get: () => api.get<{ theme: string; soundEnabled?: boolean; soundVolume?: number; soundType?: string }>('/settings'),
+  update: (settings: { theme?: string; soundEnabled?: boolean; soundVolume?: number; soundType?: string }) => api.put('/settings', settings),
 };
 
 // 記録API

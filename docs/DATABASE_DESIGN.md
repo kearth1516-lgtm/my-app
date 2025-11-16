@@ -95,9 +95,19 @@
 ```json
 {
   "id": "settings-fixed",
-  "theme": "dark"
+  "theme": "dark",
+  "soundEnabled": true,
+  "soundVolume": 0.5,
+  "soundType": "beep"
 }
 ```
+
+**フィールド説明:**
+- `id`: 固定値 "settings-fixed"
+- `theme`: テーマカラー（red, blue, yellow, green, pink, cyan, orange, lime, purple, black, white, brown）
+- `soundEnabled`: アラート音の有効/無効（boolean）
+- `soundVolume`: 音量（0.0-1.0）
+- `soundType`: 音の種類（beep, bell, chime, digital）
 
 ## インデックス戦略
 

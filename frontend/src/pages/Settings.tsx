@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { settingsService } from '../services';
+import { playAlertSound, getSoundTypeName, type SoundType } from '../utils/audio';
 import './Settings.css';
 
 interface ThemeOption {
@@ -105,6 +106,9 @@ const themeOptions: ThemeOption[] = [
 
 function Settings() {
   const [currentTheme, setCurrentTheme] = useState('purple');
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundVolume, setSoundVolume] = useState(0.5);
+  const [soundType, setSoundType] = useState<SoundType>('beep');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -116,6 +120,9 @@ function Settings() {
     try {
       const response = await settingsService.get();
       setCurrentTheme(response.data.theme);
+      setSoundEnabled(response.data.soundEnabled ?? true);
+      setSoundVolume(response.data.soundVolume ?? 0.5);
+      setSoundType((response.data.soundType as SoundType) ?? 'beep');
       applyTheme(response.data.theme);
     } catch (error) {
       console.error('設定の読み込みに失敗しました:', error);
@@ -152,6 +159,46 @@ function Settings() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleSoundToggle = async (enabled: boolean) => {
+    setSaving(true);
+    try {
+      await settingsService.update({ soundEnabled: enabled });
+      setSoundEnabled(enabled);
+    } catch (error) {
+      console.error('設定の保存に失敗しました:', error);
+      alert('設定の保存に失敗しました');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleVolumeChange = async (volume: number) => {
+    setSoundVolume(volume);
+    // デバウンスなしで即座に保存
+    try {
+      await settingsService.update({ soundVolume: volume });
+    } catch (error) {
+      console.error('音量の保存に失敗しました:', error);
+    }
+  };
+
+  const handleSoundTypeChange = async (type: SoundType) => {
+    setSaving(true);
+    try {
+      await settingsService.update({ soundType: type });
+      setSoundType(type);
+    } catch (error) {
+      console.error('設定の保存に失敗しました:', error);
+      alert('設定の保存に失敗しました');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePreviewSound = () => {
+    playAlertSound(soundType, soundVolume);
   };
 
   if (loading) {
@@ -191,6 +238,78 @@ function Settings() {
                 )}
               </button>
             ))}
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <h2>🔔 アラート音</h2>
+          <p className="section-description">タイマー終了時に通知音を鳴らします</p>
+          
+          <div className="sound-settings">
+            <div className="setting-row">
+              <label className="setting-label">
+                <span>アラート音を有効にする</span>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={soundEnabled}
+                    onChange={(e) => handleSoundToggle(e.target.checked)}
+                    disabled={saving}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </label>
+            </div>
+
+            {soundEnabled && (
+              <>
+                <div className="setting-row">
+                  <label className="setting-label">
+                    <span>音量</span>
+                    <div className="volume-control">
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        value={soundVolume}
+                        onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                        className="volume-slider"
+                      />
+                      <span className="volume-value">{Math.round(soundVolume * 100)}%</span>
+                    </div>
+                  </label>
+                </div>
+
+                <div className="setting-row">
+                  <label className="setting-label">
+                    <span>音の種類</span>
+                    <div className="sound-type-options">
+                      {(['beep', 'bell', 'chime', 'digital'] as SoundType[]).map((type) => (
+                        <button
+                          key={type}
+                          className={`sound-type-btn ${soundType === type ? 'active' : ''}`}
+                          onClick={() => handleSoundTypeChange(type)}
+                          disabled={saving}
+                        >
+                          {getSoundTypeName(type)}
+                        </button>
+                      ))}
+                    </div>
+                  </label>
+                </div>
+
+                <div className="setting-row">
+                  <button
+                    className="preview-sound-btn"
+                    onClick={handlePreviewSound}
+                    disabled={saving}
+                  >
+                    🔊 音をプレビュー
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </section>
 

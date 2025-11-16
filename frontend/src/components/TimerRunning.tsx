@@ -18,18 +18,25 @@ const TimerRunning: React.FC<TimerRunningProps> = ({
   const [isPaused, setIsPaused] = useState(false);
 
   const formatTime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes
+    const isNegative = seconds < 0;
+    const absSeconds = Math.abs(seconds);
+    const hours = Math.floor(absSeconds / 3600);
+    const minutes = Math.floor((absSeconds % 3600) / 60);
+    const secs = absSeconds % 60;
+    const timeString = `${hours.toString().padStart(2, '0')}:${minutes
       .toString()
       .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return isNegative ? `-${timeString}` : timeString;
   };
 
   const getProgress = (): number => {
     if (timer.type === 'stopwatch') {
       // ストップウォッチは進捗表示なし（常に0）
       return 0;
+    }
+    // マイナス時間の場合は100%（完了）
+    if (remainingSeconds < 0) {
+      return 100;
     }
     return ((timer.duration - remainingSeconds) / timer.duration) * 100;
   };
@@ -98,7 +105,12 @@ const TimerRunning: React.FC<TimerRunningProps> = ({
           {timer.type === 'countdown' ? (
             <>
               <p>設定時間: {formatTime(timer.duration)}</p>
-              <p>経過: {formatTime(timer.duration - remainingSeconds)}</p>
+              <p>経過: {formatTime(Math.max(0, timer.duration - remainingSeconds))}</p>
+              {remainingSeconds < 0 && (
+                <p style={{ color: '#ff6b6b', fontWeight: 'bold' }}>
+                  超過時間: {formatTime(Math.abs(remainingSeconds))}
+                </p>
+              )}
             </>
           ) : (
             <p>経過時間: {formatTime(remainingSeconds)}</p>
