@@ -23,6 +23,7 @@ function Recipes() {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isAiSuggestModalOpen, setIsAiSuggestModalOpen] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+  const [viewingRecipe, setViewingRecipe] = useState<Recipe | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // レシピ一覧取得
@@ -169,12 +170,20 @@ function Recipes() {
           </div>
         ) : (
           recipes.map((recipe) => (
-            <div key={recipe.id} className="recipe-card">
+            <div 
+              key={recipe.id} 
+              className="recipe-card"
+              onClick={() => setViewingRecipe(recipe)}
+              style={{ cursor: 'pointer' }}
+            >
               <div className="recipe-card-header">
                 <h3>{recipe.name}</h3>
                 <button
                   className="favorite-button"
-                  onClick={() => handleToggleFavorite(recipe)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleToggleFavorite(recipe);
+                  }}
                 >
                   {recipe.isFavorite ? '⭐' : '☆'}
                 </button>
@@ -230,19 +239,28 @@ function Recipes() {
               <div className="recipe-actions">
                 <button
                   className="cook-button"
-                  onClick={() => handleRecordCooking(recipe.id!)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRecordCooking(recipe.id!);
+                  }}
                 >
                   🍴 今日作った
                 </button>
                 <button
                   className="edit-button"
-                  onClick={() => setEditingRecipe(recipe)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingRecipe(recipe);
+                  }}
                 >
                   ✏️ 編集
                 </button>
                 <button
                   className="delete-button"
-                  onClick={() => handleDeleteRecipe(recipe.id!)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteRecipe(recipe.id!);
+                  }}
                   disabled={deletingId === recipe.id}
                 >
                   {deletingId === recipe.id ? '削除中...' : '🗑️ 削除'}
@@ -287,6 +305,18 @@ function Recipes() {
         <AiSuggestModal
           onClose={() => setIsAiSuggestModalOpen(false)}
           onAccept={handleCreateRecipe}
+        />
+      )}
+
+      {/* 詳細表示モーダル */}
+      {viewingRecipe && (
+        <RecipeDetailModal
+          recipe={viewingRecipe}
+          onClose={() => setViewingRecipe(null)}
+          onEdit={(recipe) => {
+            setViewingRecipe(null);
+            setEditingRecipe(recipe);
+          }}
         />
       )}
     </div>
@@ -655,6 +685,126 @@ function AiSuggestModal({ onClose, onAccept }: AiSuggestModalProps) {
             </div>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// レシピ詳細表示モーダル
+interface RecipeDetailModalProps {
+  recipe: Recipe;
+  onClose: () => void;
+  onEdit: (recipe: Recipe) => void;
+}
+
+function RecipeDetailModal({ recipe, onClose, onEdit }: RecipeDetailModalProps) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content recipe-detail-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>🍳 {recipe.name}</h2>
+          <button className="close-button" onClick={onClose}>×</button>
+        </div>
+
+        <div className="recipe-detail-content">
+          {/* 基本情報 */}
+          <div className="detail-section">
+            <div className="detail-info-grid">
+              {recipe.cookingTime && (
+                <div className="detail-info-item">
+                  <span className="detail-icon">⏱️</span>
+                  <div>
+                    <div className="detail-label">調理時間</div>
+                    <div className="detail-value">{recipe.cookingTime}分</div>
+                  </div>
+                </div>
+              )}
+              <div className="detail-info-item">
+                <span className="detail-icon">📊</span>
+                <div>
+                  <div className="detail-label">調理回数</div>
+                  <div className="detail-value">{recipe.timesCooked}回</div>
+                </div>
+              </div>
+              {recipe.isFavorite && (
+                <div className="detail-info-item">
+                  <span className="detail-icon">⭐</span>
+                  <div>
+                    <div className="detail-label">お気に入り</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* タグ */}
+          {recipe.tags.length > 0 && (
+            <div className="detail-section">
+              <h3>🏷️ タグ</h3>
+              <div className="recipe-tags">
+                {recipe.tags.map((tag, idx) => (
+                  <span key={idx} className="tag">{tag}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 材料 */}
+          {recipe.ingredients.length > 0 && (
+            <div className="detail-section">
+              <h3>🥕 材料</h3>
+              <ul className="detail-list">
+                {recipe.ingredients.map((ingredient, idx) => (
+                  <li key={idx}>{ingredient}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* 手順 */}
+          {recipe.steps.length > 0 && (
+            <div className="detail-section">
+              <h3>📝 手順</h3>
+              <ol className="detail-steps">
+                {recipe.steps.map((step, idx) => (
+                  <li key={idx}>{step}</li>
+                ))}
+              </ol>
+            </div>
+          )}
+
+          {/* レシピURL */}
+          {recipe.source && (
+            <div className="detail-section">
+              <h3>🔗 参照元</h3>
+              <a
+                href={recipe.source}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="recipe-link"
+              >
+                {recipe.source}
+              </a>
+            </div>
+          )}
+        </div>
+
+        <div className="modal-actions">
+          <button
+            type="button"
+            className="cancel-button"
+            onClick={onClose}
+          >
+            閉じる
+          </button>
+          <button
+            type="button"
+            className="submit-button"
+            onClick={() => onEdit(recipe)}
+          >
+            ✏️ 編集
+          </button>
+        </div>
       </div>
     </div>
   );

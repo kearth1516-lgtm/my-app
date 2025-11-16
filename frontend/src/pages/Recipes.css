@@ -28,7 +28,9 @@
 }
 
 .filter-button,
-.create-button {
+.create-button,
+.import-button,
+.ai-button {
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
@@ -604,6 +606,122 @@
   margin: 0 0 20px 0;
   color: #333;
   font-size: 1.2rem;
+}
+
+/* レシピ詳細モーダル */
+.recipe-detail-modal {
+  max-width: 800px;
+}
+
+.recipe-detail-content {
+  padding: 25px;
+  max-height: calc(90vh - 180px);
+  overflow-y: auto;
+}
+
+.detail-section {
+  margin-bottom: 30px;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.detail-section h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  color: #333;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 8px;
+}
+
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.detail-info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 10px;
+}
+
+.detail-icon {
+  font-size: 2rem;
+}
+
+.detail-label {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.detail-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.detail-list li {
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.detail-list li:last-child {
+  margin-bottom: 0;
+}
+
+.detail-steps {
+  counter-reset: step-counter;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.detail-steps li {
+  counter-increment: step-counter;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  color: #555;
+  line-height: 1.6;
+  position: relative;
+  padding-left: 50px;
+}
+
+.detail-steps li:last-child {
+  margin-bottom: 0;
+}
+
+.detail-steps li::before {
+  content: counter(step-counter);
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  width: 28px;
+  height: 28px;
+  background: var(--theme-primary, #667eea);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 /* レスポンシブ */
