@@ -1,0 +1,24 @@
+nohup: ignoring input
+
+> frontend@0.0.0 dev
+> vite
+
+
+  VITE v7.2.2  ready in 104 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+2:52:14 PM [vite] (client) hmr update /src/components/SaveRecordModal.tsx
+2:52:38 PM [vite] (client) hmr update /src/components/ManualRecordModal.tsx
+2:52:51 PM [vite] (client) hmr update /src/components/ManualRecordModal.tsx
+2:53:15 PM [vite] (client) hmr update /src/components/EditRecordModal.tsx
+2:53:26 PM [vite] (client) hmr update /src/components/EditRecordModal.tsx
+2:54:01 PM [vite] (client) hmr update /src/components/SaveRecordModal.css
+2:54:01 PM [vite] (client) hmr update /src/components/ManualRecordModal.css
+2:54:01 PM [vite] (client) hmr update /src/components/EditRecordModal.css
+2:54:42 PM [vite] (client) hmr update /src/components/CalendarView.tsx
+2:54:55 PM [vite] (client) hmr update /src/components/CalendarView.tsx
+2:55:08 PM [vite] (client) hmr update /src/components/CalendarView.css
+2:55:52 PM [vite] (client) hmr update /src/pages/Timers.tsx
+2:55:52 PM [vite] (client) hmr update /src/App.tsx, /src/pages/Home.tsx, /src/pages/Settings.tsx, /src/pages/Records.tsx, /src/pages/Timers.tsx
+2:56:12 PM [vite] (client) hmr update /src/pages/Records.tsx

@@ -7,9 +7,16 @@ interface EditRecordModalProps {
   record: TimerRecord | null;
   availableTags: string[];
   onClose: () => void;
-  onSave: (recordId: string, updates: { duration?: number; date?: string; tag?: string }) => void;
+  onSave: (recordId: string, updates: { duration?: number; date?: string; tag?: string; stamp?: string }) => void;
   onAddTag: (tag: string) => void;
 }
+
+// スタンプの選択肢（絵文字）
+const STAMP_OPTIONS = [
+  '👍', '✨', '🔥', '🎉', '❤️', '🏆', '💪', '🚀',
+  '🌟', '🌈', '🌻', '🎓', '📚', '✏️', '🎵', '⚽',
+  '🏀', '🏋️', '🎨', '💻', '☕', '🍔', '🌞', '🌙'
+];
 
 function EditRecordModal({ isOpen, record, availableTags, onClose, onSave, onAddTag }: EditRecordModalProps) {
   const [hours, setHours] = useState(0);
@@ -17,6 +24,7 @@ function EditRecordModal({ isOpen, record, availableTags, onClose, onSave, onAdd
   const [seconds, setSeconds] = useState(0);
   const [date, setDate] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
+  const [selectedStamp, setSelectedStamp] = useState('');
   const [newTag, setNewTag] = useState('');
   const [showNewTagInput, setShowNewTagInput] = useState(false);
 
@@ -37,6 +45,9 @@ function EditRecordModal({ isOpen, record, availableTags, onClose, onSave, onAdd
       
       // タグを設定
       setSelectedTag(record.tag || '');
+      
+      // スタンプを設定
+      setSelectedStamp(record.stamp || '');
     }
   }, [record]);
 
@@ -50,7 +61,7 @@ function EditRecordModal({ isOpen, record, availableTags, onClose, onSave, onAdd
       return;
     }
 
-    const updates: { duration?: number; date?: string; tag?: string } = {};
+    const updates: { duration?: number; date?: string; tag?: string; stamp?: string } = {};
     
     if (totalSeconds !== record.duration) {
       updates.duration = totalSeconds;
@@ -62,6 +73,10 @@ function EditRecordModal({ isOpen, record, availableTags, onClose, onSave, onAdd
     
     if (selectedTag !== (record.tag || '')) {
       updates.tag = selectedTag;
+    }
+    
+    if (selectedStamp !== (record.stamp || '')) {
+      updates.stamp = selectedStamp;
     }
 
     onSave(record.id, updates);
@@ -187,6 +202,29 @@ function EditRecordModal({ isOpen, record, availableTags, onClose, onSave, onAdd
               </div>
             </div>
           )}
+
+          <div className="form-group">
+            <label>スタンプ</label>
+            <div className="stamp-grid">
+              <button
+                type="button"
+                className={`stamp-option ${selectedStamp === '' ? 'selected' : ''}`}
+                onClick={() => setSelectedStamp('')}
+              >
+                なし
+              </button>
+              {STAMP_OPTIONS.map((stamp) => (
+                <button
+                  key={stamp}
+                  type="button"
+                  className={`stamp-option ${selectedStamp === stamp ? 'selected' : ''}`}
+                  onClick={() => setSelectedStamp(stamp)}
+                >
+                  {stamp}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="modal-footer">

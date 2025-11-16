@@ -30,6 +30,7 @@ export interface TimerRecord {
   duration: number; // 秒単位
   tag?: string; // タグ（英語、数学、筋トレなど）
   date: string; // YYYY-MM-DD形式
+  stamp?: string; // スタンプ（絵文字）
 }
 
 export interface FashionItem {

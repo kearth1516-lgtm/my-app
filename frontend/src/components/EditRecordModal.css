@@ -141,3 +141,46 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
+
+/* スタンプグリッド */
+.stamp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  gap: 8px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.stamp-option {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 8px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+}
+
+.stamp-option:hover {
+  border-color: #667eea;
+  transform: scale(1.05);
+  background: #f0f4ff;
+}
+
+.stamp-option.selected {
+  border-color: #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.stamp-option:first-child {
+  font-size: 0.9rem;
+  color: #666;
+}

@@ -13,9 +13,17 @@ interface ManualRecordModalProps {
     duration: number;
     tag?: string;
     date: string;
+    stamp?: string;
   }) => void;
   onAddTag: (tag: string) => void;
 }
+
+// スタンプの選択肢（絵文字）
+const STAMP_OPTIONS = [
+  '👍', '✨', '🔥', '🎉', '❤️', '🏆', '💪', '🚀',
+  '🌟', '🌈', '🌻', '🎓', '📚', '✏️', '🎵', '⚽',
+  '🏀', '🏋️', '🎨', '💻', '☕', '🍔', '🌞', '🌙'
+];
 
 function ManualRecordModal({
   isOpen,
@@ -32,6 +40,7 @@ function ManualRecordModal({
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTag, setNewTag] = useState('');
   const [date, setDate] = useState<string>('');
+  const [selectedStamp, setSelectedStamp] = useState<string>('');
 
   useEffect(() => {
     if (isOpen) {
@@ -51,6 +60,7 @@ function ManualRecordModal({
       setSelectedTag('');
       setIsAddingTag(false);
       setNewTag('');
+      setSelectedStamp('');
     }
   }, [isOpen]);
 
@@ -84,7 +94,8 @@ function ManualRecordModal({
       timerName: stopwatchTimer.name,
       duration: totalSeconds,
       tag: selectedTag && selectedTag.trim() !== '' ? selectedTag : undefined,
-      date: new Date(date).toISOString().split('T')[0]
+      date: new Date(date).toISOString().split('T')[0],
+      stamp: selectedStamp || undefined
     });
 
     onClose();
@@ -194,6 +205,29 @@ function ManualRecordModal({
                 </button>
               </div>
             )}
+          </div>
+
+          <div className="form-group">
+            <label>スタンプ（オプション）</label>
+            <div className="stamp-grid">
+              <button
+                type="button"
+                className={`stamp-option ${selectedStamp === '' ? 'selected' : ''}`}
+                onClick={() => setSelectedStamp('')}
+              >
+                なし
+              </button>
+              {STAMP_OPTIONS.map((stamp) => (
+                <button
+                  key={stamp}
+                  type="button"
+                  className={`stamp-option ${selectedStamp === stamp ? 'selected' : ''}`}
+                  onClick={() => setSelectedStamp(stamp)}
+                >
+                  {stamp}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="modal-actions">

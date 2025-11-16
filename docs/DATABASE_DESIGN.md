@@ -35,20 +35,40 @@
 ```json
 {
   "id": "timer-uuid",
-  "userId": "user-uuid",
   "name": "勉強タイマー",
   "duration": 3600,
-  "imageUrl": "https://...",
-  "records": [
-    {
-      "startTime": "2024-01-01T10:00:00Z",
-      "endTime": "2024-01-01T11:00:00Z"
-    }
-  ]
+  "image": "https://...",
+  "type": "countdown",
+  "order": 0,
+  "isFavorite": false
 }
 ```
 
-### 4. fashion_items
+### 4. records
+```json
+{
+  "id": "record-uuid",
+  "timerId": "timer-uuid",
+  "timerName": "勉強タイマー",
+  "startTime": "2024-01-01T10:00:00Z",
+  "endTime": "2024-01-01T11:00:00Z",
+  "duration": 3600,
+  "date": "2024-01-01",
+  "tag": "数学",
+  "stamp": "📚"
+}
+```
+
+### 5. tags
+```json
+{
+  "id": "tag-uuid",
+  "name": "数学",
+  "createdAt": "2024-01-01T00:00:00Z"
+}
+```
+
+### 6. fashion_items
 ```json
 {
   "id": "item-uuid",
@@ -60,7 +80,7 @@
 }
 ```
 
-### 5. daily_outfits
+### 7. daily_outfits
 ```json
 {
   "id": "outfit-uuid",
@@ -71,8 +91,19 @@
 }
 ```
 
+### 8. settings
+```json
+{
+  "id": "settings-fixed",
+  "theme": "dark"
+}
+```
+
 ## インデックス戦略
 
-- `userId`: すべてのクエリの高速化
+- `timerId`: records検索用
+- `date`: 日付範囲検索用
+- `tag`: タグフィルタリング用
+- `order`: タイマー並び順
 - `createdAt`: 時系列検索用
 - `tags`: レシピ検索用

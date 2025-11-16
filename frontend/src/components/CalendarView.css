@@ -151,6 +151,20 @@
   align-items: center;
   gap: 2px;
   font-size: 0.75rem;
+  width: 100%;
+}
+
+.day-stamps {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stamp-icon {
+  font-size: 1.2rem;
+  line-height: 1;
 }
 
 .record-count {

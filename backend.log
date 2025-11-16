@@ -1,0 +1,42 @@
+INFO:     Will watch for changes in these directories: ['/home/mogu/projects/kyopro/my-app/backend']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [66885] using WatchFiles
+INFO:     Started server process [66889]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Database 'my-app-db' initialized
+Container 'timers' initialized
+Container 'tags' initialized
+Container 'settings' initialized
+Container 'records' initialized
+Settings already exist
+Stopwatch timer already exists
+🚀 アプリケーション起動
+✅ Cosmos DB 初期化完了
+INFO:     127.0.0.1:46162 - "GET /api/timers HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:39566 - "GET /api/records HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:39578 - "GET /api/timers HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:39580 - "GET /api/timers/tags/all HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39566 - "GET /api/timers HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:39578 - "GET /api/records HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:39590 - "GET /api/settings HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:39598 - "GET /api/records/stats/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39580 - "GET /api/records/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39578 - "GET /api/timers/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39566 - "GET /api/timers/tags/all HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39590 - "GET /api/settings HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:39598 - "GET /api/records/stats/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39614 - "GET /api/settings/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39578 - "GET /api/records/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39580 - "GET /api/timers/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39614 - "GET /api/settings/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46038 - "OPTIONS /api/records/record-1763224900860992 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46038 - "PUT /api/records/record-1763224900860992 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46038 - "GET /api/records HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:46038 - "GET /api/timers HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:46038 - "GET /api/timers/tags/all HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46038 - "GET /api/records/stats/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46046 - "GET /api/records/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46038 - "GET /api/timers/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46038 - "GET /api/records HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:46038 - "GET /api/records/ HTTP/1.1" 200 OK

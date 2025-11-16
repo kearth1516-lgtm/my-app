@@ -20,6 +20,7 @@ class RecordCreate(BaseModel):
     duration: int
     date: str
     tag: Optional[str] = None
+    stamp: Optional[str] = None
 
 
 class ManualRecordCreate(BaseModel):
@@ -28,6 +29,7 @@ class ManualRecordCreate(BaseModel):
     duration: int
     date: str
     tag: Optional[str] = None
+    stamp: Optional[str] = None
 
 
 class Record(BaseModel):
@@ -39,12 +41,14 @@ class Record(BaseModel):
     duration: int
     date: str
     tag: Optional[str] = None
+    stamp: Optional[str] = None
 
 
 class RecordUpdate(BaseModel):
     duration: Optional[int] = None
     date: Optional[str] = None
     tag: Optional[str] = None
+    stamp: Optional[str] = None
 
 
 @router.get("/")
@@ -203,6 +207,9 @@ async def update_record(record_id: str, update: RecordUpdate):
         
         if update.tag is not None:
             existing_record["tag"] = update.tag if update.tag else None
+        
+        if update.stamp is not None:
+            existing_record["stamp"] = update.stamp if update.stamp else None
         
         # 更新を保存
         updated_record = records_container.replace_item(item=record_id, body=existing_record)

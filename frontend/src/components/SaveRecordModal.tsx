@@ -6,10 +6,17 @@ interface SaveRecordModalProps {
   timerName: string;
   duration: number; // 秒
   availableTags: string[];
-  onSave: (tag: string) => void;
+  onSave: (tag: string, stamp?: string) => void;
   onCancel: () => void;
   onAddTag: (tag: string) => void;
 }
+
+// スタンプの選択肢（絵文字）
+const STAMP_OPTIONS = [
+  '👍', '✨', '🔥', '🎉', '❤️', '🏆', '💪', '🚀',
+  '🌟', '🌈', '🌻', '🎓', '📚', '✏️', '🎵', '⚽',
+  '🏀', '🏋️', '🎨', '💻', '☕', '🍔', '🌞', '🌙'
+];
 
 const SaveRecordModal: React.FC<SaveRecordModalProps> = ({
   isOpen,
@@ -23,12 +30,14 @@ const SaveRecordModal: React.FC<SaveRecordModalProps> = ({
   const [selectedTag, setSelectedTag] = useState<string>('');
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newTagName, setNewTagName] = useState('');
+  const [selectedStamp, setSelectedStamp] = useState<string>('');
 
   useEffect(() => {
     if (!isOpen) {
       setSelectedTag('');
       setIsAddingNew(false);
       setNewTagName('');
+      setSelectedStamp('');
     }
   }, [isOpen]);
 
@@ -50,12 +59,12 @@ const SaveRecordModal: React.FC<SaveRecordModalProps> = ({
     if (isAddingNew) {
       if (newTagName.trim()) {
         onAddTag(newTagName.trim());
-        onSave(newTagName.trim());
+        onSave(newTagName.trim(), selectedStamp || undefined);
       } else {
         alert('タグ名を入力してください');
       }
     } else {
-      onSave(selectedTag); // 空文字列の場合は「その他」として扱う
+      onSave(selectedTag, selectedStamp || undefined);
     }
   };
 
@@ -129,6 +138,29 @@ const SaveRecordModal: React.FC<SaveRecordModalProps> = ({
                 </button>
               </>
             )}
+          </div>
+
+          <div className="stamp-selection">
+            <label>スタンプ（オプション）</label>
+            <div className="stamp-grid">
+              <button
+                type="button"
+                className={`stamp-option ${selectedStamp === '' ? 'selected' : ''}`}
+                onClick={() => setSelectedStamp('')}
+              >
+                なし
+              </button>
+              {STAMP_OPTIONS.map((stamp) => (
+                <button
+                  key={stamp}
+                  type="button"
+                  className={`stamp-option ${selectedStamp === stamp ? 'selected' : ''}`}
+                  onClick={() => setSelectedStamp(stamp)}
+                >
+                  {stamp}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

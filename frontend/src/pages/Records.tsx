@@ -138,6 +138,7 @@ function Records() {
     duration: number;
     tag?: string;
     date: string;
+    stamp?: string;
   }) => {
     try {
       console.log('手動記録追加データ:', data); // デバッグログ

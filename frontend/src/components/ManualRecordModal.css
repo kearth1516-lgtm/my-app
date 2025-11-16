@@ -170,6 +170,49 @@
   background: rgba(var(--theme-text-alpha), 0.15);
 }
 
+/* スタンプグリッド */
+.stamp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  gap: 8px;
+  padding: 10px;
+  background: rgba(var(--theme-text-alpha), 0.05);
+  border-radius: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.stamp-option {
+  padding: 12px;
+  border: 2px solid rgba(var(--theme-text-alpha), 0.2);
+  background: white;
+  border-radius: 8px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+}
+
+.stamp-option:hover {
+  border-color: var(--theme-primary);
+  transform: scale(1.05);
+  background: rgba(var(--theme-primary-alpha), 0.1);
+}
+
+.stamp-option.selected {
+  border-color: var(--theme-primary);
+  background: rgba(var(--theme-primary-alpha), 0.15);
+  box-shadow: 0 2px 8px rgba(var(--theme-primary-alpha), 0.3);
+}
+
+.stamp-option:first-child {
+  font-size: 0.9rem;
+  color: var(--theme-text-color);
+}
+
 /* モーダルアクション */
 .modal-actions {
   display: flex;

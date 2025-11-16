@@ -63,6 +63,20 @@ function CalendarView({ records, onDateClick }: CalendarViewProps) {
     return dateRecords ? dateRecords.length : 0;
   };
 
+  // 日付のスタンプを取得（最大3つ）
+  const getDateStamps = (date: Date): string[] => {
+    const dateStr = formatDateKey(date);
+    const dateRecords = recordsByDate.get(dateStr);
+    if (!dateRecords) return [];
+    
+    const stamps = dateRecords
+      .map(record => record.stamp)
+      .filter((stamp): stamp is string => !!stamp);
+    
+    // 重複を削除して最大3つまで
+    return Array.from(new Set(stamps)).slice(0, 3);
+  };
+
   // 前月へ
   const goToPreviousMonth = () => {
     if (currentMonth === 0) {
@@ -149,6 +163,7 @@ function CalendarView({ records, onDateClick }: CalendarViewProps) {
 
           const totalDuration = getTotalDuration(date);
           const recordCount = getRecordCount(date);
+          const stamps = getDateStamps(date);
           const hasRecords = recordCount > 0;
           const isTodayDate = isToday(date);
 
@@ -161,6 +176,13 @@ function CalendarView({ records, onDateClick }: CalendarViewProps) {
               <div className="day-number">{date.getDate()}</div>
               {hasRecords && (
                 <div className="day-info">
+                  {stamps.length > 0 && (
+                    <div className="day-stamps">
+                      {stamps.map((stamp, idx) => (
+                        <span key={idx} className="stamp-icon">{stamp}</span>
+                      ))}
+                    </div>
+                  )}
                   <div className="record-count">{recordCount}件</div>
                   <div className="total-duration">{formatDuration(totalDuration)}</div>
                 </div>
