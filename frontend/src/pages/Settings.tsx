@@ -111,6 +111,9 @@ function Settings() {
   const [soundType, setSoundType] = useState<SoundType>('beep');
   const [openaiApiKey, setOpenaiApiKey] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
+  const [googleCalendarId, setGoogleCalendarId] = useState('');
+  const [weatherApiKey, setWeatherApiKey] = useState('');
+  const [showWeatherApiKey, setShowWeatherApiKey] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -126,6 +129,8 @@ function Settings() {
       setSoundVolume(response.data.soundVolume ?? 0.5);
       setSoundType((response.data.soundType as SoundType) ?? 'beep');
       setOpenaiApiKey(response.data.openaiApiKey ?? '');
+      setGoogleCalendarId(response.data.googleCalendarId ?? '');
+      setWeatherApiKey(response.data.weatherApiKey ?? '');
       applyTheme(response.data.theme);
     } catch (error) {
       console.error('設定の読み込みに失敗しました:', error);
@@ -216,6 +221,32 @@ function Settings() {
     } catch (error) {
       console.error('APIキーの保存に失敗しました:', error);
       alert('APIキーの保存に失敗しました');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCalendarSave = async () => {
+    setSaving(true);
+    try {
+      await settingsService.update({ googleCalendarId });
+      alert('カレンダーIDを保存しました');
+    } catch (error) {
+      console.error('カレンダーIDの保存に失敗しました:', error);
+      alert('カレンダーIDの保存に失敗しました');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleWeatherApiKeySave = async () => {
+    setSaving(true);
+    try {
+      await settingsService.update({ weatherApiKey });
+      alert('天気APIキーを保存しました');
+    } catch (error) {
+      console.error('天気APIキーの保存に失敗しました:', error);
+      alert('天気APIキーの保存に失敗しました');
     } finally {
       setSaving(false);
     }
@@ -371,6 +402,79 @@ function Settings() {
             <p className="api-key-note">
               ⚠️ APIキーは安全に保存されますが、漏洩に注意してください。<br />
               OpenAIのAPIキーは<a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">こちら</a>から取得できます。
+            </p>
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <h2>📅 カレンダー連携</h2>
+          <p className="section-description">GoogleカレンダーIDを設定してスケジュールを表示</p>
+          
+          <div className="api-key-settings">
+            <div className="setting-row">
+              <label className="setting-label">
+                <span>Google Calendar ID</span>
+                <input
+                  type="text"
+                  value={googleCalendarId}
+                  onChange={(e) => setGoogleCalendarId(e.target.value)}
+                  placeholder="your-calendar-id@group.calendar.google.com"
+                  className="api-key-input"
+                />
+              </label>
+            </div>
+            <div className="setting-row">
+              <button
+                className="save-api-key-btn"
+                onClick={handleCalendarSave}
+                disabled={saving || !googleCalendarId}
+              >
+                💾 カレンダーIDを保存
+              </button>
+            </div>
+            <p className="api-key-note">
+              ℹ️ GoogleカレンダーのIDは、カレンダー設定の「カレンダーの統合」から確認できます。
+            </p>
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <h2>🌤️ 天気情報</h2>
+          <p className="section-description">OpenWeatherMap APIキーを設定して天気を表示</p>
+          
+          <div className="api-key-settings">
+            <div className="setting-row">
+              <label className="setting-label">
+                <span>Weather API Key</span>
+                <div className="api-key-input-group">
+                  <input
+                    type={showWeatherApiKey ? "text" : "password"}
+                    value={weatherApiKey}
+                    onChange={(e) => setWeatherApiKey(e.target.value)}
+                    placeholder="your-api-key"
+                    className="api-key-input"
+                  />
+                  <button
+                    className="toggle-visibility-btn"
+                    onClick={() => setShowWeatherApiKey(!showWeatherApiKey)}
+                    type="button"
+                  >
+                    {showWeatherApiKey ? '👁️' : '🔒'}
+                  </button>
+                </div>
+              </label>
+            </div>
+            <div className="setting-row">
+              <button
+                className="save-api-key-btn"
+                onClick={handleWeatherApiKeySave}
+                disabled={saving || !weatherApiKey}
+              >
+                💾 APIキーを保存
+              </button>
+            </div>
+            <p className="api-key-note">
+              ⚠️ APIキーは<a href="https://openweathermap.org/api" target="_blank" rel="noopener noreferrer">OpenWeatherMap</a>から無料で取得できます。
             </p>
           </div>
         </section>

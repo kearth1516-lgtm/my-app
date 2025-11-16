@@ -43,6 +43,8 @@ export const fashionService = {
 export const homeService = {
   getRandomImage: () => api.get<HomeImage>('/home/images'),
   uploadImage: (data: HomeImage) => api.post<HomeImage>('/home/images', data),
+  getWeather: () => api.get('/home/weather'),
+  getCalendarEvents: () => api.get('/home/calendar/events'),
 };
 
 // 認証API
@@ -55,8 +57,8 @@ export const authService = {
 
 // 設定API
 export const settingsService = {
-  get: () => api.get<{ theme: string; soundEnabled?: boolean; soundVolume?: number; soundType?: string; openaiApiKey?: string }>('/settings'),
-  update: (settings: { theme?: string; soundEnabled?: boolean; soundVolume?: number; soundType?: string; openaiApiKey?: string }) => api.put('/settings', settings),
+  get: () => api.get<{ theme: string; soundEnabled?: boolean; soundVolume?: number; soundType?: string; openaiApiKey?: string; googleCalendarId?: string; weatherApiKey?: string }>('/settings'),
+  update: (settings: { theme?: string; soundEnabled?: boolean; soundVolume?: number; soundType?: string; openaiApiKey?: string; googleCalendarId?: string; weatherApiKey?: string }) => api.put('/settings', settings),
 };
 
 // 記録API

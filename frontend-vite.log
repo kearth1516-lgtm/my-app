@@ -133,3 +133,27 @@ nohup: ignoring input
 6:09:37 PM [vite] (client) hmr update /src/pages/Recipes.tsx
 6:09:48 PM [vite] (client) hmr update /src/pages/Recipes.tsx
 6:10:14 PM [vite] (client) hmr update /src/pages/Recipes.css
+6:13:33 PM [vite] (client) hmr update /src/App.tsx, /src/pages/Home.tsx, /src/pages/Settings.tsx, /src/pages/Records.tsx, /src/pages/Timers.tsx, /src/pages/Recipes.tsx
+6:13:33 PM [vite] (client) hmr update /src/App.tsx
+6:13:33 PM [vite] (client) hmr update /src/components/SaveRecordModal.tsx
+6:13:33 PM [vite] (client) hmr update /src/pages/Settings.tsx
+6:13:33 PM [vite] (client) hmr update /src/pages/Settings.css
+6:13:33 PM [vite] (client) hmr update /src/pages/Timers.tsx
+6:13:33 PM [vite] (client) hmr update /src/components/SaveRecordModal.css
+6:13:33 PM [vite] (client) hmr update /src/pages/Records.tsx
+6:13:33 PM [vite] (client) hmr update /src/components/RecordDetailModal.css
+6:13:33 PM [vite] (client) hmr update /src/components/EditRecordModal.tsx
+6:13:33 PM [vite] (client) hmr update /src/components/EditRecordModal.css
+6:13:33 PM [vite] (client) hmr update /src/components/ManualRecordModal.tsx
+6:13:33 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+6:13:33 PM [vite] (client) hmr update /src/pages/Recipes.css
+6:13:33 PM [vite] (client) hmr update /src/components/ManualRecordModal.css
+6:13:33 PM [vite] (client) hmr update /src/components/RecordDetailModal.tsx
+6:15:06 PM [vite] (client) hmr update /src/App.tsx, /src/pages/Home.tsx, /src/pages/Settings.tsx, /src/pages/Records.tsx, /src/pages/Timers.tsx, /src/pages/Recipes.tsx
+6:15:33 PM [vite] (client) hmr update /src/pages/Settings.tsx
+6:15:58 PM [vite] (client) hmr update /src/pages/Settings.tsx
+6:16:16 PM [vite] (client) hmr update /src/pages/Home.tsx
+6:16:34 PM [vite] (client) hmr update /src/pages/Home.tsx
+6:16:50 PM [vite] (client) hmr update /src/pages/Home.tsx
+6:17:06 PM [vite] (client) hmr update /src/pages/Home.css
+6:17:21 PM [vite] (client) hmr update /src/pages/Home.css
