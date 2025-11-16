@@ -12,7 +12,7 @@ export const recipeService = {
   recordCooking: (id: string) => api.post(`/recipes/${id}/cook`),
   importFromUrl: (url: string) => api.post('/recipes/import', null, { params: { url } }),
   suggestByIngredients: (ingredients: string[]) => api.post('/recipes/suggest', { ingredients }),
-  getRecommendations: (limit?: number) => api.get('/recipes/recommend', { params: { limit } }),
+  getRecommendations: (limit?: number, tag?: string, ingredient?: string) => api.get('/recipes/recommend', { params: { limit, tag, ingredient } }),
   rebuildIndex: () => api.post('/recipes/embeddings/rebuild'),
 };
 

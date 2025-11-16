@@ -24,6 +24,8 @@ function Recipes() {
   const [isAiSuggestModalOpen, setIsAiSuggestModalOpen] = useState(false);
   const [isRecommendModalOpen, setIsRecommendModalOpen] = useState(false);
   const [recommendedRecipes, setRecommendedRecipes] = useState<(Recipe & { reason?: string })[]>([]);
+  const [recommendTagFilter, setRecommendTagFilter] = useState('');
+  const [recommendIngredientFilter, setRecommendIngredientFilter] = useState('');
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [viewingRecipe, setViewingRecipe] = useState<Recipe | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -118,7 +120,11 @@ function Recipes() {
     try {
       setIsRecommendModalOpen(true);
       setRecommendedRecipes([]);
-      const response = await recipeService.getRecommendations(5);
+      const response = await recipeService.getRecommendations(
+        5, 
+        recommendTagFilter || undefined, 
+        recommendIngredientFilter || undefined
+      );
       setRecommendedRecipes(response.data.data || []);
     } catch (error) {
       console.error('レシピの推薦に失敗しました:', error);
@@ -350,6 +356,11 @@ function Recipes() {
           setIsRecommendModalOpen(false);
           setViewingRecipe(recipe);
         }}
+        tagFilter={recommendTagFilter}
+        ingredientFilter={recommendIngredientFilter}
+        onTagFilterChange={setRecommendTagFilter}
+        onIngredientFilterChange={setRecommendIngredientFilter}
+        onRefresh={handleGetRecommendations}
       />
     </div>
   );
@@ -857,12 +868,22 @@ function RecommendationsModal({
   isOpen,
   onClose,
   recommendations,
-  onViewRecipe
+  onViewRecipe,
+  tagFilter,
+  ingredientFilter,
+  onTagFilterChange,
+  onIngredientFilterChange,
+  onRefresh
 }: {
   isOpen: boolean;
   onClose: () => void;
   recommendations: (Recipe & { reason?: string })[];
   onViewRecipe: (recipe: Recipe) => void;
+  tagFilter: string;
+  ingredientFilter: string;
+  onTagFilterChange: (value: string) => void;
+  onIngredientFilterChange: (value: string) => void;
+  onRefresh: () => void;
 }) {
   if (!isOpen) return null;
 
@@ -870,6 +891,31 @@ function RecommendationsModal({
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal recommend-modal" onClick={(e) => e.stopPropagation()}>
         <h2>🔮 おすすめのレシピ</h2>
+        
+        {/* フィルター */}
+        <div className="recommend-filters">
+          <div className="filter-group">
+            <label>タグでフィルター:</label>
+            <input
+              type="text"
+              value={tagFilter}
+              onChange={(e) => onTagFilterChange(e.target.value)}
+              placeholder="例: 洋食、和食"
+            />
+          </div>
+          <div className="filter-group">
+            <label>材料でフィルター:</label>
+            <input
+              type="text"
+              value={ingredientFilter}
+              onChange={(e) => onIngredientFilterChange(e.target.value)}
+              placeholder="例: さつまいも"
+            />
+          </div>
+          <button className="refresh-button" onClick={onRefresh}>
+            🔄 再読み込み
+          </button>
+        </div>
         
         {recommendations.length === 0 ? (
           <div className="no-recommendations">

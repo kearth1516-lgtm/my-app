@@ -75,7 +75,9 @@ class RecipeRecommendationEngine:
         self,
         cooked_recipe_ids: List[str],
         n_recommendations: int = 5,
-        generate_reason: bool = False
+        generate_reason: bool = False,
+        tag_filter: Optional[str] = None,
+        ingredient_filter: Optional[str] = None
     ) -> List[Dict]:
         """
         レシピを推薦
@@ -84,6 +86,8 @@ class RecipeRecommendationEngine:
             cooked_recipe_ids: 調理したレシピのIDリスト
             n_recommendations: 推薦するレシピ数
             generate_reason: Azure OpenAIで推薦理由を生成するか
+            tag_filter: タグでフィルタリング（例: "洋食"）
+            ingredient_filter: 材料でフィルタリング（例: "さつまいも"）
             
         Returns:
             推薦レシピのリスト
@@ -93,30 +97,38 @@ class RecipeRecommendationEngine:
         
         if user_embedding is None:
             # 調理履歴がない場合は、人気レシピを返す
-            return self._get_popular_recipes(n_recommendations)
+            return self._get_popular_recipes(n_recommendations, tag_filter, ingredient_filter)
         
-        # ベクトル検索で類似レシピを取得
+        # ベクトル検索で類似レシピを取得（多めに取得してフィルタリング）
         similar_recipes = self.vector_store.search_similar_recipes(
             query_embedding=user_embedding.tolist(),
-            n_results=n_recommendations,
+            n_results=n_recommendations * 3,  # フィルタリング後に十分な数を確保
             exclude_ids=cooked_recipe_ids  # 既に作ったレシピは除外
         )
         
+        # フィルタリング
+        filtered_recipes = self._apply_filters(similar_recipes, tag_filter, ingredient_filter)
+        
+        # 上位n件に絞る
+        filtered_recipes = filtered_recipes[:n_recommendations]
+        
         # 推薦理由を生成（オプション）
         if generate_reason and self.openai_client:
-            similar_recipes = self._add_recommendation_reasons(
-                similar_recipes,
+            filtered_recipes = self._add_recommendation_reasons(
+                filtered_recipes,
                 cooked_recipe_ids
             )
         
-        return similar_recipes
+        return filtered_recipes
     
-    def _get_popular_recipes(self, n: int = 5) -> List[Dict]:
+    def _get_popular_recipes(self, n: int = 5, tag_filter: Optional[str] = None, ingredient_filter: Optional[str] = None) -> List[Dict]:
         """
         人気レシピを取得（フォールバック）
         
         Args:
             n: 取得するレシピ数
+            tag_filter: タグでフィルタリング
+            ingredient_filter: 材料でフィルタリング
             
         Returns:
             人気レシピのリスト
@@ -130,10 +142,43 @@ class RecipeRecommendationEngine:
             enable_cross_partition_query=True
         ))
         
-        # Pythonでtimes Cookedでソート
-        recipes.sort(key=lambda x: x.get("timesCooked", 0), reverse=True)
+        # フィルタリング
+        filtered_recipes = self._apply_filters(recipes, tag_filter, ingredient_filter)
         
-        return recipes[:n]
+        # Pythonでtimes Cookedでソート
+        filtered_recipes.sort(key=lambda x: x.get("timesCooked", 0), reverse=True)
+        
+        return filtered_recipes[:n]
+    
+    def _apply_filters(self, recipes: List[Dict], tag_filter: Optional[str], ingredient_filter: Optional[str]) -> List[Dict]:
+        """
+        レシピリストにフィルターを適用
+        
+        Args:
+            recipes: レシピリスト
+            tag_filter: タグフィルター
+            ingredient_filter: 材料フィルター
+            
+        Returns:
+            フィルター適用後のレシピリスト
+        """
+        filtered = recipes
+        
+        # タグフィルター
+        if tag_filter:
+            filtered = [
+                r for r in filtered 
+                if tag_filter in r.get("tags", [])
+            ]
+        
+        # 材料フィルター
+        if ingredient_filter:
+            filtered = [
+                r for r in filtered
+                if any(ingredient_filter in ing for ing in r.get("ingredients", []))
+            ]
+        
+        return filtered
     
     def _add_recommendation_reasons(
         self,

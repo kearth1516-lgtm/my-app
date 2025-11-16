@@ -233,10 +233,10 @@ JSONのみを返してください。説明文は不要です。"""
 
 # レシピ推薦機能（RAGベース）
 @router.get("/recommend")
-async def recommend_recipes(limit: int = 5):
+async def recommend_recipes(limit: int = 5, tag: Optional[str] = None, ingredient: Optional[str] = None):
     """ユーザーの調理履歴に基づいてレシピを推薦（RAGベース）"""
     try:
-        print(f"[DEBUG] Starting recommendation with limit={limit}")
+        print(f"[DEBUG] Starting recommendation with limit={limit}, tag={tag}, ingredient={ingredient}")
         
         # 推薦エンジンを取得
         engine = get_recommendation_engine()
@@ -257,7 +257,9 @@ async def recommend_recipes(limit: int = 5):
         recommendations = engine.recommend_recipes(
             cooked_recipe_ids=cooked_recipe_ids,
             n_recommendations=limit,
-            generate_reason=True
+            generate_reason=True,
+            tag_filter=tag,
+            ingredient_filter=ingredient
         )
         print(f"[DEBUG] Got {len(recommendations)} recommendations")
         

@@ -127,3 +127,9 @@ nohup: ignoring input
 6:03:43 PM [vite] (client) hmr update /src/App.tsx, /src/pages/Home.tsx, /src/pages/Settings.tsx, /src/pages/Records.tsx, /src/pages/Timers.tsx, /src/pages/Recipes.tsx
 6:04:03 PM [vite] (client) hmr update /src/pages/Settings.tsx
 6:04:22 PM [vite] (client) hmr update /src/pages/Settings.css
+6:08:31 PM [vite] (client) hmr update /src/App.tsx, /src/pages/Home.tsx, /src/pages/Settings.tsx, /src/pages/Records.tsx, /src/pages/Timers.tsx, /src/pages/Recipes.tsx
+6:08:59 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+6:09:07 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+6:09:37 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+6:09:48 PM [vite] (client) hmr update /src/pages/Recipes.tsx
+6:10:14 PM [vite] (client) hmr update /src/pages/Recipes.css
