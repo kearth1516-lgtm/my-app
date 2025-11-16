@@ -62,6 +62,8 @@ export const recordService = {
   create: (record: Omit<TimerRecord, 'id'>) => api.post<TimerRecord>('/records', record),
   createManual: (data: { timerId: string; timerName: string; duration: number; date: string; tag?: string }) =>
     api.post<TimerRecord>('/records/manual', data),
+  update: (id: string, updates: { duration?: number; date?: string; tag?: string }) =>
+    api.put<TimerRecord>(`/records/${id}`, updates),
   delete: (id: string) => api.delete(`/records/${id}`),
   getSummary: (params?: { timerId?: string; tag?: string }) =>
     api.get('/records/stats/summary', { params }),

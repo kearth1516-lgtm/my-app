@@ -41,6 +41,12 @@ class Record(BaseModel):
     tag: Optional[str] = None
 
 
+class RecordUpdate(BaseModel):
+    duration: Optional[int] = None
+    date: Optional[str] = None
+    tag: Optional[str] = None
+
+
 @router.get("/")
 async def get_all_records(
     timer_id: Optional[str] = Query(None, alias="timerId"),
@@ -163,6 +169,49 @@ async def create_manual_record(record: ManualRecordCreate):
     
     except exceptions.CosmosHttpResponseError as e:
         raise HTTPException(status_code=500, detail=f"Failed to create manual record: {str(e)}")
+
+
+@router.put("/{record_id}")
+async def update_record(record_id: str, update: RecordUpdate):
+    """
+    記録を更新（時間、日付、タグ）
+    """
+    try:
+        # 既存の記録を取得
+        existing_record = records_container.read_item(item=record_id, partition_key=record_id)
+        
+        # 更新可能なフィールドを変更
+        if update.duration is not None:
+            existing_record["duration"] = update.duration
+            # 期間が変わった場合、終了時刻も再計算
+            start_time = datetime.fromisoformat(existing_record["startTime"].replace('Z', '+00:00'))
+            from datetime import timedelta
+            end_time = start_time + timedelta(seconds=update.duration)
+            existing_record["endTime"] = end_time.isoformat()
+        
+        if update.date is not None:
+            existing_record["date"] = update.date
+            # 日付が変わった場合、開始・終了時刻も調整
+            new_date = datetime.fromisoformat(update.date)
+            old_start = datetime.fromisoformat(existing_record["startTime"].replace('Z', '+00:00'))
+            # 時刻部分を保持して日付のみ変更
+            new_start = new_date.replace(hour=old_start.hour, minute=old_start.minute, second=old_start.second)
+            existing_record["startTime"] = new_start.isoformat()
+            from datetime import timedelta
+            end_time = new_start + timedelta(seconds=existing_record["duration"])
+            existing_record["endTime"] = end_time.isoformat()
+        
+        if update.tag is not None:
+            existing_record["tag"] = update.tag if update.tag else None
+        
+        # 更新を保存
+        updated_record = records_container.replace_item(item=record_id, body=existing_record)
+        return updated_record
+        
+    except exceptions.CosmosResourceNotFoundError:
+        raise HTTPException(status_code=404, detail="Record not found")
+    except exceptions.CosmosHttpResponseError as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update record: {str(e)}")
 
 
 @router.delete("/{record_id}")

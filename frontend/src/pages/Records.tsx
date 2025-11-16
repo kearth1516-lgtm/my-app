@@ -5,6 +5,7 @@ import type { TimerRecord, Timer } from '../types';
 import RecordsGraph from '../components/RecordsGraph';
 import ManualRecordModal from '../components/ManualRecordModal';
 import RecordDetailModal from '../components/RecordDetailModal';
+import EditRecordModal from '../components/EditRecordModal';
 import './Records.css';
 
 function Records() {
@@ -20,6 +21,8 @@ function Records() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedDateRecords, setSelectedDateRecords] = useState<TimerRecord[]>([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<TimerRecord | null>(null);
 
   useEffect(() => {
     loadData();
@@ -96,6 +99,28 @@ function Records() {
     } catch (error) {
       console.error('記録の削除に失敗しました:', error);
       alert('記録の削除に失敗しました');
+    }
+  };
+
+  const handleEditRecord = (record: TimerRecord) => {
+    setEditingRecord(record);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateRecord = async (recordId: string, updates: { duration?: number; date?: string; tag?: string }) => {
+    try {
+      await recordService.update(recordId, updates);
+      // ローカル状態を更新
+      await loadData();
+      // 詳細モーダルが開いている場合は再読み込み
+      if (isDetailModalOpen && selectedDate) {
+        const updatedRecords = await recordService.getAll();
+        const dayRecords = updatedRecords.data.filter(r => r.date === selectedDate);
+        setSelectedDateRecords(dayRecords);
+      }
+    } catch (error) {
+      console.error('記録の更新に失敗しました:', error);
+      alert('記録の更新に失敗しました');
     }
   };
 
@@ -284,6 +309,19 @@ function Records() {
         records={selectedDateRecords}
         onClose={() => setIsDetailModalOpen(false)}
         onDelete={handleDeleteRecord}
+        onEdit={handleEditRecord}
+      />
+
+      <EditRecordModal
+        isOpen={isEditModalOpen}
+        record={editingRecord}
+        availableTags={allTags}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingRecord(null);
+        }}
+        onSave={handleUpdateRecord}
+        onAddTag={handleAddTag}
       />
     </div>
   );

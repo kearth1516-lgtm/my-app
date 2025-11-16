@@ -9,9 +9,10 @@ interface RecordDetailModalProps {
   date: string;
   records: TimerRecord[];
   onDelete: (recordId: string) => void;
+  onEdit: (record: TimerRecord) => void;
 }
 
-function RecordDetailModal({ isOpen, onClose, date, records, onDelete }: RecordDetailModalProps) {
+function RecordDetailModal({ isOpen, onClose, date, records, onDelete, onEdit }: RecordDetailModalProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; recordId: string | null; recordName: string }>({ 
     isOpen: false, 
@@ -116,13 +117,22 @@ function RecordDetailModal({ isOpen, onClose, date, records, onDelete }: RecordD
                       <span className="detail-date-value">{formatDateTime(record.startTime)}</span>
                     </div>
                   </div>
-                  <button
-                    className="delete-button"
-                    onClick={() => handleDeleteClick(record.id, record.timerName)}
-                    disabled={deletingId === record.id}
-                  >
-                    {deletingId === record.id ? '削除中...' : '🗑️ 削除'}
-                  </button>
+                  <div className="detail-record-actions">
+                    <button
+                      className="edit-button"
+                      onClick={() => onEdit(record)}
+                      disabled={deletingId === record.id}
+                    >
+                      ✏️ 編集
+                    </button>
+                    <button
+                      className="delete-button"
+                      onClick={() => handleDeleteClick(record.id, record.timerName)}
+                      disabled={deletingId === record.id}
+                    >
+                      {deletingId === record.id ? '削除中...' : '🗑️ 削除'}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

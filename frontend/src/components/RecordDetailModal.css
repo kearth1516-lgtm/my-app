@@ -112,6 +112,35 @@
   gap: 8px;
 }
 
+.detail-record-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.edit-button {
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.edit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.edit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .detail-record-timer,
 .detail-record-tag,
 .detail-record-time,
