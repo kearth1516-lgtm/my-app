@@ -164,3 +164,95 @@ nohup: ignoring input
 6:44:27 PM [vite] (client) hmr update /src/pages/Settings.tsx
 6:50:13 PM [vite] (client) hmr update /src/pages/Settings.tsx
 6:53:28 PM [vite] (client) hmr update /src/pages/Settings.tsx
+6:58:39 PM [vite] (client) hmr update /src/App.tsx, /src/pages/Home.tsx, /src/pages/Settings.tsx, /src/pages/Records.tsx, /src/pages/Timers.tsx, /src/pages/Recipes.tsx
+6:58:39 PM [vite] (client) hmr update /src/pages/Home.tsx
+6:58:39 PM [vite] (client) hmr update /src/pages/Settings.tsx
+6:58:39 PM [vite] (client) hmr update /src/pages/Home.css
+6:59:13 PM [vite] (client) hmr update /src/pages/Home.tsx
+6:59:13 PM [vite] (client) hmr update /src/pages/Settings.tsx
+7:00:22 PM [vite] (client) hmr update /src/App.tsx
+7:00:31 PM [vite] (client) hmr update /src/pages/Settings.tsx
+7:01:05 PM [vite] (client) hmr update /src/App.tsx
+7:01:05 PM [vite] (client) Pre-transform error: /home/mogu/projects/kyopro/my-app/frontend/src/pages/Settings.tsx: Unexpected token (71:2)
+
+  69 |       localStorage.setItem('app-theme', theme);
+  70 |     }
+> 71 |   };
+     |   ^
+  72 |
+  73 |   const handleThemeChange = async (themeId: string) => {
+  74 |     setSaving(true);
+  Plugin: vite:react-babel
+  File: /home/mogu/projects/kyopro/my-app/frontend/src/pages/Settings.tsx:71:2
+  69 |        localStorage.setItem('app-theme', theme);
+  70 |      }
+  71 |    };
+     |    ^
+  72 |  
+  73 |    const handleThemeChange = async (themeId: string) => {
+7:01:05 PM [vite] Internal server error: /home/mogu/projects/kyopro/my-app/frontend/src/pages/Settings.tsx: Unexpected token (71:2)
+
+  69 |       localStorage.setItem('app-theme', theme);
+  70 |     }
+> 71 |   };
+     |   ^
+  72 |
+  73 |   const handleThemeChange = async (themeId: string) => {
+  74 |     setSaving(true);
+  Plugin: vite:react-babel
+  File: /home/mogu/projects/kyopro/my-app/frontend/src/pages/Settings.tsx:71:2
+  69 |        localStorage.setItem('app-theme', theme);
+  70 |      }
+  71 |    };
+     |    ^
+  72 |  
+  73 |    const handleThemeChange = async (themeId: string) => {
+      at constructor (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:367:19)
+      at TypeScriptParserMixin.raise (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:6624:19)
+      at TypeScriptParserMixin.unexpected (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:6644:16)
+      at TypeScriptParserMixin.parseExprAtom (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:11508:22)
+      at TypeScriptParserMixin.parseExprAtom (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:4793:20)
+      at TypeScriptParserMixin.parseExprSubscripts (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:11145:23)
+      at TypeScriptParserMixin.parseUpdate (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:11130:21)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:11110:23)
+      at TypeScriptParserMixin.parseMaybeUnary (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:9890:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:10963:61)
+      at TypeScriptParserMixin.parseExprOps (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:10968:23)
+      at TypeScriptParserMixin.parseMaybeConditional (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:10945:23)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:10895:21)
+      at TypeScriptParserMixin.parseMaybeAssign (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:9839:20)
+      at TypeScriptParserMixin.parseExpressionBase (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:10848:23)
+      at /home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:10844:39
+      at TypeScriptParserMixin.allowInAnd (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:12495:16)
+      at TypeScriptParserMixin.parseExpression (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:10844:17)
+      at TypeScriptParserMixin.parseStatementContent (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:12971:23)
+      at TypeScriptParserMixin.parseStatementContent (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:9569:18)
+      at TypeScriptParserMixin.parseStatementLike (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:12843:17)
+      at TypeScriptParserMixin.parseModuleItem (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:12820:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:13392:36)
+      at TypeScriptParserMixin.parseBlockBody (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:13385:10)
+      at TypeScriptParserMixin.parseProgram (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:12698:10)
+      at TypeScriptParserMixin.parseTopLevel (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:12688:25)
+      at TypeScriptParserMixin.parse (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:14568:25)
+      at TypeScriptParserMixin.parse (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:10183:18)
+      at parse (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/parser/lib/index.js:14602:38)
+      at parser (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/home/mogu/projects/kyopro/my-app/frontend/node_modules/gensync/index.js:261:32)
+      at /home/mogu/projects/kyopro/my-app/frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/mogu/projects/kyopro/my-app/frontend/node_modules/gensync/index.js:223:11)
+      at /home/mogu/projects/kyopro/my-app/frontend/node_modules/gensync/index.js:189:28
+      at /home/mogu/projects/kyopro/my-app/frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /home/mogu/projects/kyopro/my-app/frontend/node_modules/gensync/index.js:113:33
+      at step (/home/mogu/projects/kyopro/my-app/frontend/node_modules/gensync/index.js:287:14)
+      at /home/mogu/projects/kyopro/my-app/frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/home/mogu/projects/kyopro/my-app/frontend/node_modules/gensync/index.js:223:11)
+7:03:19 PM [vite] (client) hmr update /src/App.tsx
+7:03:27 PM [vite] (client) hmr update /src/pages/Settings.tsx
+7:03:42 PM [vite] (client) hmr update /src/pages/Settings.tsx

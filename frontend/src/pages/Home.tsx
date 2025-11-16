@@ -164,6 +164,22 @@ function Home() {
         )}
       </div>
 
+      <div className="home-image-container">
+        {loading ? (
+          <div className="loading">読み込み中...</div>
+        ) : image && image.imageUrl ? (
+          <div className="image-card">
+            <img src={image.imageUrl} alt={image.caption || '推し写真'} />
+            {image.caption && <p className="image-caption">{image.caption}</p>}
+          </div>
+        ) : (
+          <div className="no-image">
+            <p>画像がありません</p>
+            <button onClick={loadRandomImage}>再読み込み</button>
+          </div>
+        )}
+      </div>
+
       {/* スケジュール */}
       {events.length > 0 && (
         <div className="schedule-section">
@@ -229,22 +245,6 @@ function Home() {
           </div>
         </div>
       )}
-
-      <div className="home-image-container">
-        {loading ? (
-          <div className="loading">読み込み中...</div>
-        ) : image && image.imageUrl ? (
-          <div className="image-card">
-            <img src={image.imageUrl} alt={image.caption || '推し写真'} />
-            {image.caption && <p className="image-caption">{image.caption}</p>}
-          </div>
-        ) : (
-          <div className="no-image">
-            <p>画像がありません</p>
-            <button onClick={loadRandomImage}>再読み込み</button>
-          </div>
-        )}
-      </div>
 
       <nav className="home-menu">
         <a href="/timers" className="menu-item">
