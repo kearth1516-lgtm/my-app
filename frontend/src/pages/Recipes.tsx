@@ -7,6 +7,7 @@ import './Recipes.css';
 interface RecipeFormData {
   name: string;
   ingredients: string[];
+  steps: string[];
   cookingTime?: number;
   source?: string;
   tags: string[];
@@ -254,6 +255,7 @@ interface RecipeModalProps {
 function RecipeModal({ recipe, onClose, onSubmit }: RecipeModalProps) {
   const [name, setName] = useState(recipe?.name || '');
   const [ingredients, setIngredients] = useState(recipe?.ingredients.join('\n') || '');
+  const [steps, setSteps] = useState(recipe?.steps.join('\n') || '');
   const [cookingTime, setCookingTime] = useState(recipe?.cookingTime?.toString() || '');
   const [source, setSource] = useState(recipe?.source || '');
   const [tags, setTags] = useState(recipe?.tags.join(', ') || '');
@@ -268,6 +270,7 @@ function RecipeModal({ recipe, onClose, onSubmit }: RecipeModalProps) {
     onSubmit({
       name: name.trim(),
       ingredients: ingredients.split('\n').filter(i => i.trim()),
+      steps: steps.split('\n').filter(s => s.trim()),
       cookingTime: cookingTime ? parseInt(cookingTime) : undefined,
       source: source.trim() || undefined,
       tags: tags.split(',').map(t => t.trim()).filter(t => t),
@@ -286,6 +289,7 @@ function RecipeModal({ recipe, onClose, onSubmit }: RecipeModalProps) {
           <div className="form-group">
             <label>レシピ名 *</label>
             <input
+              className="recipe-input"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -301,6 +305,16 @@ function RecipeModal({ recipe, onClose, onSubmit }: RecipeModalProps) {
               onChange={(e) => setIngredients(e.target.value)}
               placeholder="例:&#10;玉ねぎ 2個&#10;人参 1本&#10;じゃがいも 3個"
               rows={5}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>手順（1行に1つ）</label>
+            <textarea
+              value={steps}
+              onChange={(e) => setSteps(e.target.value)}
+              placeholder="例:&#10;1. 野菜を切る&#10;2. 炒める&#10;3. 煮込む"
+              rows={6}
             />
           </div>
 

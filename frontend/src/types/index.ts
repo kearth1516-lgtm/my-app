@@ -4,6 +4,7 @@ export interface Recipe {
   id: string;
   name: string;
   ingredients: string[];
+  steps: string[];
   cookingTime?: number; // 分単位、オプショナル
   source?: string;
   tags: string[];

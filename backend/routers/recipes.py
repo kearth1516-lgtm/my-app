@@ -11,6 +11,7 @@ router = APIRouter()
 class RecipeCreate(BaseModel):
     name: str
     ingredients: List[str] = []
+    steps: List[str] = []  # 調理手順
     cookingTime: Optional[int] = None  # 分単位
     source: Optional[str] = None  # レシピURL
     tags: List[str] = []
@@ -19,6 +20,7 @@ class RecipeCreate(BaseModel):
 class RecipeUpdate(BaseModel):
     name: Optional[str] = None
     ingredients: Optional[List[str]] = None
+    steps: Optional[List[str]] = None
     cookingTime: Optional[int] = None
     source: Optional[str] = None
     tags: Optional[List[str]] = None
@@ -28,6 +30,7 @@ class Recipe(BaseModel):
     id: str
     name: str
     ingredients: List[str]
+    steps: List[str]
     cookingTime: Optional[int] = None
     source: Optional[str] = None
     tags: List[str]
@@ -67,6 +70,7 @@ async def create_recipe(recipe: RecipeCreate):
             "id": str(uuid.uuid4()),
             "name": recipe.name,
             "ingredients": recipe.ingredients,
+            "steps": recipe.steps,
             "cookingTime": recipe.cookingTime,
             "source": recipe.source,
             "tags": recipe.tags,
@@ -106,6 +110,8 @@ async def update_recipe(recipe_id: str, update: RecipeUpdate):
             existing_recipe["name"] = update.name
         if update.ingredients is not None:
             existing_recipe["ingredients"] = update.ingredients
+        if update.steps is not None:
+            existing_recipe["steps"] = update.steps
         if update.cookingTime is not None:
             existing_recipe["cookingTime"] = update.cookingTime
         if update.source is not None:
