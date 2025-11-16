@@ -147,7 +147,7 @@ function Home() {
           <div className="info-card weather-card">
             <div className="weather-icon">
               <img 
-                src={`http://openweathermap.org/img/wn/${weather.icon}@2x.png`} 
+                src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`} 
                 alt={weather.description} 
               />
             </div>
@@ -155,7 +155,9 @@ function Home() {
               <div className="temperature">{Math.round(weather.temperature)}°C</div>
               <div className="description">{weather.description}</div>
               <div className="details">
-                💧 {weather.humidity}% | 🌬️ {weather.windSpeed}m/s
+                {weather.humidity !== null && `💧 ${weather.humidity}%`}
+                {weather.humidity !== null && weather.windSpeed !== null && ' | '}
+                {weather.windSpeed !== null && `🌬️ ${weather.windSpeed}m/s`}
               </div>
             </div>
           </div>

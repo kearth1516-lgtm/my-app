@@ -112,8 +112,6 @@ function Settings() {
   const [openaiApiKey, setOpenaiApiKey] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
   const [googleCalendarId, setGoogleCalendarId] = useState('');
-  const [weatherApiKey, setWeatherApiKey] = useState('');
-  const [showWeatherApiKey, setShowWeatherApiKey] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -130,7 +128,6 @@ function Settings() {
       setSoundType((response.data.soundType as SoundType) ?? 'beep');
       setOpenaiApiKey(response.data.openaiApiKey ?? '');
       setGoogleCalendarId(response.data.googleCalendarId ?? '');
-      setWeatherApiKey(response.data.weatherApiKey ?? '');
       applyTheme(response.data.theme);
     } catch (error) {
       console.error('設定の読み込みに失敗しました:', error);
@@ -234,19 +231,6 @@ function Settings() {
     } catch (error) {
       console.error('カレンダーIDの保存に失敗しました:', error);
       alert('カレンダーIDの保存に失敗しました');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleWeatherApiKeySave = async () => {
-    setSaving(true);
-    try {
-      await settingsService.update({ weatherApiKey });
-      alert('天気APIキーを保存しました');
-    } catch (error) {
-      console.error('天気APIキーの保存に失敗しました:', error);
-      alert('天気APIキーの保存に失敗しました');
     } finally {
       setSaving(false);
     }
@@ -408,17 +392,17 @@ function Settings() {
 
         <section className="settings-section">
           <h2>📅 カレンダー連携</h2>
-          <p className="section-description">GoogleカレンダーIDを設定してスケジュールを表示</p>
+          <p className="section-description">Googleカレンダーの秘密のアドレス（iCal形式）を設定</p>
           
           <div className="api-key-settings">
             <div className="setting-row">
               <label className="setting-label">
-                <span>Google Calendar ID</span>
+                <span>秘密のアドレス（iCal形式）</span>
                 <input
                   type="text"
                   value={googleCalendarId}
                   onChange={(e) => setGoogleCalendarId(e.target.value)}
-                  placeholder="your-calendar-id@group.calendar.google.com"
+                  placeholder="https://calendar.google.com/calendar/ical/.../private-xxx/basic.ics"
                   className="api-key-input"
                 />
               </label>
@@ -429,52 +413,21 @@ function Settings() {
                 onClick={handleCalendarSave}
                 disabled={saving || !googleCalendarId}
               >
-                💾 カレンダーIDを保存
+                💾 カレンダーを保存
               </button>
             </div>
             <p className="api-key-note">
-              ℹ️ GoogleカレンダーのIDは、カレンダー設定の「カレンダーの統合」から確認できます。
-            </p>
-          </div>
-        </section>
-
-        <section className="settings-section">
-          <h2>🌤️ 天気情報</h2>
-          <p className="section-description">OpenWeatherMap APIキーを設定して天気を表示</p>
-          
-          <div className="api-key-settings">
-            <div className="setting-row">
-              <label className="setting-label">
-                <span>Weather API Key</span>
-                <div className="api-key-input-group">
-                  <input
-                    type={showWeatherApiKey ? "text" : "password"}
-                    value={weatherApiKey}
-                    onChange={(e) => setWeatherApiKey(e.target.value)}
-                    placeholder="your-api-key"
-                    className="api-key-input"
-                  />
-                  <button
-                    className="toggle-visibility-btn"
-                    onClick={() => setShowWeatherApiKey(!showWeatherApiKey)}
-                    type="button"
-                  >
-                    {showWeatherApiKey ? '👁️' : '🔒'}
-                  </button>
-                </div>
-              </label>
-            </div>
-            <div className="setting-row">
-              <button
-                className="save-api-key-btn"
-                onClick={handleWeatherApiKeySave}
-                disabled={saving || !weatherApiKey}
-              >
-                💾 APIキーを保存
-              </button>
-            </div>
-            <p className="api-key-note">
-              ⚠️ APIキーは<a href="https://openweathermap.org/api" target="_blank" rel="noopener noreferrer">OpenWeatherMap</a>から無料で取得できます。
+              📝 <strong>秘密のアドレス（iCal形式）の取得方法：</strong><br />
+              1. <a href="https://calendar.google.com/" target="_blank" rel="noopener noreferrer">Googleカレンダー</a>を開く（PCブラウザで）<br />
+              2. 左側の「マイカレンダー」で連携したいカレンダーにカーソルを合わせる<br />
+              3. 「︙」（縦3点メニュー）→「設定と共有」をクリック<br />
+              4. 下にスクロールして「<strong>カレンダーの統合</strong>」セクションを探す<br />
+              5. 「<strong>秘密のアドレス（iCal 形式）</strong>」のURLをコピー<br />
+              　（例: https://calendar.google.com/calendar/ical/.../private-xxx/basic.ics）<br />
+              6. 上の入力欄に貼り付けて保存<br />
+              <br />
+              ✅ <strong>メリット：</strong>カレンダーを公開設定にする必要がありません<br />
+              ⚠️ <strong>注意：</strong>このURLを知っている人は誰でもカレンダーを見れます
             </p>
           </div>
         </section>
