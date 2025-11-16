@@ -78,3 +78,7 @@ nohup: ignoring input
 3:46:42 PM [vite] (client) hmr update /src/pages/Records.tsx
 3:48:50 PM [vite] (client) hmr update /src/components/RecordDetailModal.tsx
 3:49:06 PM [vite] (client) hmr update /src/components/RecordDetailModal.css
+4:00:19 PM [vite] (client) hmr update /src/components/ManualRecordModal.css
+4:00:19 PM [vite] (client) hmr update /src/components/SaveRecordModal.css
+4:00:44 PM [vite] (client) hmr update /src/components/ManualRecordModal.css
+4:00:44 PM [vite] (client) hmr update /src/components/EditRecordModal.css

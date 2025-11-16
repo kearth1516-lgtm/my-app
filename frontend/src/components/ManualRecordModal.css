@@ -213,6 +213,80 @@
   color: var(--theme-text-color);
 }
 
+/* コメント入力 */
+.comment-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid rgba(var(--theme-text-alpha), 0.2);
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  color: #333;
+  background: white;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.2s;
+}
+
+.comment-textarea:focus {
+  outline: none;
+  border-color: var(--theme-primary);
+}
+
+.char-count {
+  text-align: right;
+  font-size: 0.85rem;
+  color: #999;
+  margin-top: 4px;
+}
+
+.char-count.warning {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.char-count.error {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* コメント入力 */
+.comment-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid rgba(var(--theme-text-alpha), 0.2);
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  color: #333;
+  background: white;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.2s;
+}
+
+.comment-textarea:focus {
+  outline: none;
+  border-color: var(--theme-primary);
+}
+
+.char-count {
+  text-align: right;
+  font-size: 0.85rem;
+  color: #999;
+  margin-top: 4px;
+}
+
+.char-count.warning {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.char-count.error {
+  color: #ef4444;
+  font-weight: 600;
+}
+
 /* モーダルアクション */
 .modal-actions {
   display: flex;
