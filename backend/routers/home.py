@@ -35,31 +35,48 @@ async def upload_image(image: HomeImage):
 async def get_weather():
     """天気情報取得"""
     try:
+        print("[DEBUG] Starting weather API request")
+        
         # 設定からAPIキーを取得
+        api_key = None
         try:
             settings = settings_container.read_item(item="app-settings", partition_key="app-settings")
             api_key = settings.get("weatherApiKey")
+            print(f"[DEBUG] API key from settings: {'set' if api_key else 'not set'}")
         except cosmos_exceptions.CosmosResourceNotFoundError:
-            api_key = None
+            print("[DEBUG] Settings not found in database")
+        except Exception as e:
+            print(f"[DEBUG] Error reading settings: {e}")
+            import traceback
+            traceback.print_exc()
         
         # 環境変数からもフォールバック
         if not api_key:
             api_key = os.getenv("WEATHER_API_KEY")
+            print(f"[DEBUG] API key from env: {'set' if api_key else 'not set'}")
         
         if not api_key:
-            raise HTTPException(
-                status_code=503,
-                detail="天気情報を取得できません（APIキーが設定されていません）"
-            )
+            print("[DEBUG] No API key found, returning null data")
+            # APIキーが設定されていない場合はnullを返す（エラーにしない）
+            return {
+                "temperature": None,
+                "description": None,
+                "icon": None,
+                "humidity": None,
+                "windSpeed": None,
+                "error": "APIキーが設定されていません"
+            }
         
         # OpenWeatherMap API (東京の天気)
-        # TODO: 位置情報をユーザー設定から取得
         city = "Tokyo"
         url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric&lang=ja"
+        print(f"[DEBUG] Requesting weather from OpenWeatherMap")
         
         response = requests.get(url, timeout=10)
+        print(f"[DEBUG] Response status: {response.status_code}")
         response.raise_for_status()
         data = response.json()
+        print("[DEBUG] Weather data retrieved successfully")
         
         return {
             "temperature": data["main"]["temp"],
@@ -70,9 +87,27 @@ async def get_weather():
         }
         
     except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"天気情報の取得に失敗しました: {str(e)}")
+        print(f"[ERROR] Request exception: {e}")
+        return {
+            "temperature": None,
+            "description": None,
+            "icon": None,
+            "humidity": None,
+            "windSpeed": None,
+            "error": f"天気情報の取得に失敗しました: {str(e)}"
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"[ERROR] Unexpected exception: {e}")
+        import traceback
+        traceback.print_exc()
+        return {
+            "temperature": None,
+            "description": None,
+            "icon": None,
+            "humidity": None,
+            "windSpeed": None,
+            "error": str(e)
+        }
 
 class CalendarEvent(BaseModel):
     id: str

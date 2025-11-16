@@ -55,9 +55,13 @@ function Home() {
   const loadWeather = async () => {
     try {
       const response = await homeService.getWeather();
-      setWeather(response.data);
+      // temperatureがnullの場合は天気情報を設定しない
+      if (response.data.temperature !== null) {
+        setWeather(response.data);
+      }
     } catch (error) {
       console.error('天気情報の取得に失敗しました:', error);
+      // エラーは無視して続行
     }
   };
 
