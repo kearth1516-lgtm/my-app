@@ -109,7 +109,7 @@ function Records() {
     setIsEditModalOpen(true);
   };
 
-  const handleUpdateRecord = async (recordId: string, updates: { duration?: number; date?: string; tag?: string }) => {
+  const handleUpdateRecord = async (recordId: string, updates: { duration?: number; date?: string; tag?: string; stamp?: string; comment?: string }) => {
     try {
       await recordService.update(recordId, updates);
       // ローカル状態を更新
@@ -139,6 +139,7 @@ function Records() {
     tag?: string;
     date: string;
     stamp?: string;
+    comment?: string;
   }) => {
     try {
       console.log('手動記録追加データ:', data); // デバッグログ

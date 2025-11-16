@@ -243,11 +243,11 @@ function Timers() {
     setDeleteConfirm({ isOpen: false, timerId: null, timerName: '' });
   };
 
-  const handleSaveRecord = async (tag?: string, stamp?: string) => {
+  const handleSaveRecord = async (tag?: string, stamp?: string, comment?: string) => {
     if (!saveRecordModal.timerId) return;
     
     try {
-      await timerService.stop(saveRecordModal.timerId, tag, stamp);
+      await timerService.stop(saveRecordModal.timerId, tag, stamp, comment);
       
       setActiveTimer(null);
       setIsPaused(false);

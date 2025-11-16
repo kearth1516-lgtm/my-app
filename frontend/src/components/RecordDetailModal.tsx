@@ -108,6 +108,11 @@ function RecordDetailModal({ isOpen, onClose, date, records, onDelete, onEdit }:
                         <span className="detail-tag-name">{record.tag}</span>
                       </div>
                     )}
+                    {record.stamp && (
+                      <div className="detail-record-stamp">
+                        <span className="detail-stamp-value">{record.stamp}</span>
+                      </div>
+                    )}
                     <div className="detail-record-time">
                       <span className="detail-time-icon">🕐</span>
                       <span className="detail-time-value">{formatTime(record.duration)}</span>
@@ -116,6 +121,12 @@ function RecordDetailModal({ isOpen, onClose, date, records, onDelete, onEdit }:
                       <span className="detail-date-icon">📅</span>
                       <span className="detail-date-value">{formatDateTime(record.startTime)}</span>
                     </div>
+                    {record.comment && (
+                      <div className="detail-record-comment">
+                        <span className="detail-comment-icon">💬</span>
+                        <span className="detail-comment-text">{record.comment}</span>
+                      </div>
+                    )}
                   </div>
                   <div className="detail-record-actions">
                     <button

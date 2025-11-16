@@ -6,7 +6,7 @@ interface SaveRecordModalProps {
   timerName: string;
   duration: number; // 秒
   availableTags: string[];
-  onSave: (tag: string, stamp?: string) => void;
+  onSave: (tag: string, stamp?: string, comment?: string) => void;
   onCancel: () => void;
   onAddTag: (tag: string) => void;
 }
@@ -31,6 +31,7 @@ const SaveRecordModal: React.FC<SaveRecordModalProps> = ({
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newTagName, setNewTagName] = useState('');
   const [selectedStamp, setSelectedStamp] = useState<string>('');
+  const [comment, setComment] = useState<string>('');
 
   useEffect(() => {
     if (!isOpen) {
@@ -38,6 +39,7 @@ const SaveRecordModal: React.FC<SaveRecordModalProps> = ({
       setIsAddingNew(false);
       setNewTagName('');
       setSelectedStamp('');
+      setComment('');
     }
   }, [isOpen]);
 
@@ -59,12 +61,12 @@ const SaveRecordModal: React.FC<SaveRecordModalProps> = ({
     if (isAddingNew) {
       if (newTagName.trim()) {
         onAddTag(newTagName.trim());
-        onSave(newTagName.trim(), selectedStamp || undefined);
+        onSave(newTagName.trim(), selectedStamp || undefined, comment || undefined);
       } else {
         alert('タグ名を入力してください');
       }
     } else {
-      onSave(selectedTag, selectedStamp || undefined);
+      onSave(selectedTag, selectedStamp || undefined, comment || undefined);
     }
   };
 
@@ -161,6 +163,19 @@ const SaveRecordModal: React.FC<SaveRecordModalProps> = ({
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="comment-input-section">
+            <label>コメント・メモ（オプション）</label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="感想やメモを記録できます..."
+              className="comment-textarea"
+              maxLength={500}
+              rows={3}
+            />
+            <div className="char-count">{comment.length}/500</div>
           </div>
         </div>
 

@@ -14,6 +14,7 @@ interface ManualRecordModalProps {
     tag?: string;
     date: string;
     stamp?: string;
+    comment?: string;
   }) => void;
   onAddTag: (tag: string) => void;
 }
@@ -41,6 +42,7 @@ function ManualRecordModal({
   const [newTag, setNewTag] = useState('');
   const [date, setDate] = useState<string>('');
   const [selectedStamp, setSelectedStamp] = useState<string>('');
+  const [comment, setComment] = useState<string>('');
 
   useEffect(() => {
     if (isOpen) {
@@ -61,6 +63,7 @@ function ManualRecordModal({
       setIsAddingTag(false);
       setNewTag('');
       setSelectedStamp('');
+      setComment('');
     }
   }, [isOpen]);
 
@@ -95,7 +98,8 @@ function ManualRecordModal({
       duration: totalSeconds,
       tag: selectedTag && selectedTag.trim() !== '' ? selectedTag : undefined,
       date: new Date(date).toISOString().split('T')[0],
-      stamp: selectedStamp || undefined
+      stamp: selectedStamp || undefined,
+      comment: comment || undefined
     });
 
     onClose();
@@ -228,6 +232,19 @@ function ManualRecordModal({
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="form-group">
+            <label>コメント・メモ（オプション）</label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="感想やメモを記録できます..."
+              className="comment-textarea"
+              maxLength={500}
+              rows={3}
+            />
+            <div className="char-count">{comment.length}/500</div>
           </div>
 
           <div className="modal-actions">

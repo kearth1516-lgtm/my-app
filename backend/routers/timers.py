@@ -106,7 +106,7 @@ async def start_timer(timer_id: str):
     return {"message": "Timer started", "timer_id": timer_id, "startTime": start_time}
 
 @router.post("/{timer_id}/stop")
-async def stop_timer(timer_id: str, tag: Optional[str] = None, stamp: Optional[str] = None):
+async def stop_timer(timer_id: str, tag: Optional[str] = None, stamp: Optional[str] = None, comment: Optional[str] = None):
     """タイマー停止と記録保存"""
     try:
         timer = timers_container.read_item(item=timer_id, partition_key=timer_id)
@@ -135,6 +135,7 @@ async def stop_timer(timer_id: str, tag: Optional[str] = None, stamp: Optional[s
             "duration": duration_seconds,
             "tag": tag if tag else None,  # 空文字列はNoneに
             "stamp": stamp if stamp else None,  # スタンプを追加
+            "comment": comment if comment else None,  # コメントを追加
             "date": start_time.strftime("%Y-%m-%d")
         }
         

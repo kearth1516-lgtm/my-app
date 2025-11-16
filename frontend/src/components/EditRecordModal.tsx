@@ -7,7 +7,7 @@ interface EditRecordModalProps {
   record: TimerRecord | null;
   availableTags: string[];
   onClose: () => void;
-  onSave: (recordId: string, updates: { duration?: number; date?: string; tag?: string; stamp?: string }) => void;
+  onSave: (recordId: string, updates: { duration?: number; date?: string; tag?: string; stamp?: string; comment?: string }) => void;
   onAddTag: (tag: string) => void;
 }
 
@@ -27,6 +27,7 @@ function EditRecordModal({ isOpen, record, availableTags, onClose, onSave, onAdd
   const [selectedStamp, setSelectedStamp] = useState('');
   const [newTag, setNewTag] = useState('');
   const [showNewTagInput, setShowNewTagInput] = useState(false);
+  const [comment, setComment] = useState('');
 
   useEffect(() => {
     if (record) {
@@ -48,6 +49,9 @@ function EditRecordModal({ isOpen, record, availableTags, onClose, onSave, onAdd
       
       // スタンプを設定
       setSelectedStamp(record.stamp || '');
+      
+      // コメントを設定
+      setComment(record.comment || '');
     }
   }, [record]);
 
@@ -61,7 +65,7 @@ function EditRecordModal({ isOpen, record, availableTags, onClose, onSave, onAdd
       return;
     }
 
-    const updates: { duration?: number; date?: string; tag?: string; stamp?: string } = {};
+    const updates: { duration?: number; date?: string; tag?: string; stamp?: string; comment?: string } = {};
     
     if (totalSeconds !== record.duration) {
       updates.duration = totalSeconds;
@@ -77,6 +81,10 @@ function EditRecordModal({ isOpen, record, availableTags, onClose, onSave, onAdd
     
     if (selectedStamp !== (record.stamp || '')) {
       updates.stamp = selectedStamp;
+    }
+    
+    if (comment !== (record.comment || '')) {
+      updates.comment = comment;
     }
 
     onSave(record.id, updates);
@@ -224,6 +232,19 @@ function EditRecordModal({ isOpen, record, availableTags, onClose, onSave, onAdd
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="form-group">
+            <label>コメント・メモ</label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="感想やメモを記録できます..."
+              className="comment-textarea"
+              maxLength={500}
+              rows={3}
+            />
+            <div className="char-count">{comment.length}/500</div>
           </div>
         </div>
 

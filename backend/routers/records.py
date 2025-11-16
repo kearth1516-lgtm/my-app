@@ -21,6 +21,7 @@ class RecordCreate(BaseModel):
     date: str
     tag: Optional[str] = None
     stamp: Optional[str] = None
+    comment: Optional[str] = None
 
 
 class ManualRecordCreate(BaseModel):
@@ -30,6 +31,7 @@ class ManualRecordCreate(BaseModel):
     date: str
     tag: Optional[str] = None
     stamp: Optional[str] = None
+    comment: Optional[str] = None
 
 
 class Record(BaseModel):
@@ -42,6 +44,7 @@ class Record(BaseModel):
     date: str
     tag: Optional[str] = None
     stamp: Optional[str] = None
+    comment: Optional[str] = None
 
 
 class RecordUpdate(BaseModel):
@@ -49,6 +52,7 @@ class RecordUpdate(BaseModel):
     date: Optional[str] = None
     tag: Optional[str] = None
     stamp: Optional[str] = None
+    comment: Optional[str] = None
 
 
 @router.get("/")
@@ -128,7 +132,9 @@ async def create_record(record: RecordCreate):
             "endTime": record.endTime,
             "duration": record.duration,
             "date": record.date,
-            "tag": record.tag
+            "tag": record.tag,
+            "stamp": record.stamp,
+            "comment": record.comment
         }
         
         created_record = records_container.create_item(body=new_record)
@@ -165,7 +171,9 @@ async def create_manual_record(record: ManualRecordCreate):
             "endTime": end_time_str,
             "duration": record.duration,
             "date": date_str,
-            "tag": record.tag
+            "tag": record.tag,
+            "stamp": record.stamp,
+            "comment": record.comment
         }
         
         created_record = records_container.create_item(body=new_record)
@@ -210,6 +218,9 @@ async def update_record(record_id: str, update: RecordUpdate):
         
         if update.stamp is not None:
             existing_record["stamp"] = update.stamp if update.stamp else None
+        
+        if update.comment is not None:
+            existing_record["comment"] = update.comment if update.comment else None
         
         # 更新を保存
         updated_record = records_container.replace_item(item=record_id, body=existing_record)

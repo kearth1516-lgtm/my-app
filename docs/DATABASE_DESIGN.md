@@ -55,9 +55,22 @@
   "duration": 3600,
   "date": "2024-01-01",
   "tag": "数学",
-  "stamp": "📚"
+  "stamp": "📚",
+  "comment": "集中して取り組めた"
 }
 ```
+
+**フィールド説明:**
+- `id`: 記録の一意ID
+- `timerId`: 関連するタイマーのID
+- `timerName`: タイマー名
+- `startTime`: 開始時刻（ISO 8601形式）
+- `endTime`: 終了時刻（ISO 8601形式）
+- `duration`: 実行時間（秒）
+- `date`: 記録日（YYYY-MM-DD形式）
+- `tag`: タグ（オプション）
+- `stamp`: スタンプ（オプション）
+- `comment`: コメント・メモ（オプション、最大500文字）
 
 ### 5. tags
 ```json

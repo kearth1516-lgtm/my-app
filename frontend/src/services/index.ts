@@ -17,7 +17,7 @@ export const timerService = {
   create: (data: { name: string; duration: number; image: string; type?: 'countdown' | 'stopwatch' }) => api.post<Timer>('/timers', data),
   update: (id: string, updates: { name?: string; duration?: number; image?: string }) => api.put<Timer>(`/timers/${id}`, updates),
   start: (id: string) => api.post(`/timers/${id}/start`),
-  stop: (id: string, tag?: string, stamp?: string) => api.post(`/timers/${id}/stop`, null, { params: { tag, stamp } }),
+  stop: (id: string, tag?: string, stamp?: string, comment?: string) => api.post(`/timers/${id}/stop`, null, { params: { tag, stamp, comment } }),
   delete: (id: string) => api.delete(`/timers/${id}`),
   getRecords: (id: string) => api.get(`/timers/${id}/records`),
   getAllTags: () => api.get<{ tags: string[] }>('/timers/tags/all'),
@@ -60,9 +60,9 @@ export const recordService = {
     api.get<TimerRecord[]>('/records', { params }),
   getById: (id: string) => api.get<TimerRecord>(`/records/${id}`),
   create: (record: Omit<TimerRecord, 'id'>) => api.post<TimerRecord>('/records', record),
-  createManual: (data: { timerId: string; timerName: string; duration: number; date: string; tag?: string; stamp?: string }) =>
+  createManual: (data: { timerId: string; timerName: string; duration: number; date: string; tag?: string; stamp?: string; comment?: string }) =>
     api.post<TimerRecord>('/records/manual', data),
-  update: (id: string, updates: { duration?: number; date?: string; tag?: string; stamp?: string }) =>
+  update: (id: string, updates: { duration?: number; date?: string; tag?: string; stamp?: string; comment?: string }) =>
     api.put<TimerRecord>(`/records/${id}`, updates),
   delete: (id: string) => api.delete(`/records/${id}`),
   getSummary: (params?: { timerId?: string; tag?: string }) =>
