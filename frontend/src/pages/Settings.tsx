@@ -109,6 +109,8 @@ function Settings() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [soundVolume, setSoundVolume] = useState(0.5);
   const [soundType, setSoundType] = useState<SoundType>('beep');
+  const [openaiApiKey, setOpenaiApiKey] = useState('');
+  const [showApiKey, setShowApiKey] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -123,6 +125,7 @@ function Settings() {
       setSoundEnabled(response.data.soundEnabled ?? true);
       setSoundVolume(response.data.soundVolume ?? 0.5);
       setSoundType((response.data.soundType as SoundType) ?? 'beep');
+      setOpenaiApiKey(response.data.openaiApiKey ?? '');
       applyTheme(response.data.theme);
     } catch (error) {
       console.error('設定の読み込みに失敗しました:', error);
@@ -199,6 +202,23 @@ function Settings() {
 
   const handlePreviewSound = () => {
     playAlertSound(soundType, soundVolume);
+  };
+
+  const handleApiKeyChange = async (key: string) => {
+    setOpenaiApiKey(key);
+  };
+
+  const handleApiKeySave = async () => {
+    setSaving(true);
+    try {
+      await settingsService.update({ openaiApiKey });
+      alert('APIキーを保存しました');
+    } catch (error) {
+      console.error('APIキーの保存に失敗しました:', error);
+      alert('APIキーの保存に失敗しました');
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
@@ -310,6 +330,48 @@ function Settings() {
                 </div>
               </>
             )}
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <h2>🤖 AI機能設定</h2>
+          <p className="section-description">OpenAI APIキーを設定するとAI提案機能が使えます</p>
+          
+          <div className="api-key-settings">
+            <div className="setting-row">
+              <label className="setting-label">
+                <span>OpenAI API Key</span>
+                <div className="api-key-input-group">
+                  <input
+                    type={showApiKey ? "text" : "password"}
+                    value={openaiApiKey}
+                    onChange={(e) => handleApiKeyChange(e.target.value)}
+                    placeholder="sk-..."
+                    className="api-key-input"
+                  />
+                  <button
+                    className="toggle-visibility-btn"
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    type="button"
+                  >
+                    {showApiKey ? '👁️' : '🔒'}
+                  </button>
+                </div>
+              </label>
+            </div>
+            <div className="setting-row">
+              <button
+                className="save-api-key-btn"
+                onClick={handleApiKeySave}
+                disabled={saving || !openaiApiKey}
+              >
+                💾 APIキーを保存
+              </button>
+            </div>
+            <p className="api-key-note">
+              ⚠️ APIキーは安全に保存されますが、漏洩に注意してください。<br />
+              OpenAIのAPIキーは<a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">こちら</a>から取得できます。
+            </p>
           </div>
         </section>
 

@@ -11,6 +11,7 @@ class Settings(BaseModel):
     soundEnabled: Optional[bool] = True
     soundVolume: Optional[float] = 0.5  # 0.0 - 1.0
     soundType: Optional[str] = "beep"  # beep, bell, chime, digital
+    openaiApiKey: Optional[str] = None  # OpenAI API Key
 
 # 設定のID（固定）
 SETTINGS_ID = "app-settings"
@@ -24,7 +25,8 @@ async def get_settings():
             "theme": settings.get("theme", "purple"),
             "soundEnabled": settings.get("soundEnabled", True),
             "soundVolume": settings.get("soundVolume", 0.5),
-            "soundType": settings.get("soundType", "beep")
+            "soundType": settings.get("soundType", "beep"),
+            "openaiApiKey": settings.get("openaiApiKey", "")
         }
     except exceptions.CosmosResourceNotFoundError:
         # 設定が存在しない場合はデフォルト値を返す
@@ -32,7 +34,8 @@ async def get_settings():
             "theme": "purple",
             "soundEnabled": True,
             "soundVolume": 0.5,
-            "soundType": "beep"
+            "soundType": "beep",
+            "openaiApiKey": ""
         }
 
 @router.put("/")
@@ -48,12 +51,15 @@ async def update_settings(settings: Settings):
             existing_settings["soundVolume"] = settings.soundVolume
         if settings.soundType is not None:
             existing_settings["soundType"] = settings.soundType
+        if settings.openaiApiKey is not None:
+            existing_settings["openaiApiKey"] = settings.openaiApiKey
         updated_settings = settings_container.upsert_item(body=existing_settings)
         return {
             "theme": updated_settings.get("theme"),
             "soundEnabled": updated_settings.get("soundEnabled", True),
             "soundVolume": updated_settings.get("soundVolume", 0.5),
-            "soundType": updated_settings.get("soundType", "beep")
+            "soundType": updated_settings.get("soundType", "beep"),
+            "openaiApiKey": updated_settings.get("openaiApiKey", "")
         }
     except exceptions.CosmosResourceNotFoundError:
         # 設定が存在しない場合は新規作成
@@ -62,12 +68,14 @@ async def update_settings(settings: Settings):
             "theme": settings.theme,
             "soundEnabled": settings.soundEnabled if settings.soundEnabled is not None else True,
             "soundVolume": settings.soundVolume if settings.soundVolume is not None else 0.5,
-            "soundType": settings.soundType if settings.soundType is not None else "beep"
+            "soundType": settings.soundType if settings.soundType is not None else "beep",
+            "openaiApiKey": settings.openaiApiKey if settings.openaiApiKey is not None else ""
         }
         created_settings = settings_container.create_item(body=new_settings)
         return {
             "theme": created_settings.get("theme"),
             "soundEnabled": created_settings.get("soundEnabled", True),
             "soundVolume": created_settings.get("soundVolume", 0.5),
-            "soundType": created_settings.get("soundType", "beep")
+            "soundType": created_settings.get("soundType", "beep"),
+            "openaiApiKey": created_settings.get("openaiApiKey", "")
         }

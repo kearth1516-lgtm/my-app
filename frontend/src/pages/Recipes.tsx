@@ -629,8 +629,18 @@ function AiSuggestModal({ onClose, onAccept }: AiSuggestModalProps) {
       
       if (err.response?.status === 503) {
         setError('AI機能は現在利用できません（APIキーが設定されていません）');
+      } else if (err.response?.status === 422) {
+        setError('入力形式が正しくありません。材料を正しく入力してください。');
+      } else if (err.response?.data?.detail) {
+        // FastAPIのエラー詳細がある場合
+        const detail = err.response.data.detail;
+        if (typeof detail === 'string') {
+          setError(detail);
+        } else {
+          setError('レシピの生成に失敗しました');
+        }
       } else {
-        setError(err.response?.data?.detail || 'レシピの生成に失敗しました');
+        setError('レシピの生成に失敗しました');
       }
     } finally {
       setLoading(false);

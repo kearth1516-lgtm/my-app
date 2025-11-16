@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 import uuid
-from database import get_recipes_container
+from database import get_recipes_container, settings_container
 from recipe_scraper import RecipeScraper
 from recommendation_engine import get_recommendation_engine
 from vector_store import get_vector_store
@@ -153,15 +153,28 @@ async def import_recipe(url: str):
         raise HTTPException(status_code=500, detail=f"レシピの取り込みに失敗しました: {str(e)}")
 
 # AI提案機能
+class SuggestRequest(BaseModel):
+    ingredients: List[str]
+
 @router.post("/suggest")
-async def suggest_recipe(ingredients: List[str]):
+async def suggest_recipe(request: SuggestRequest):
     """材料からレシピを提案（AI機能）"""
     try:
         import os
         from openai import OpenAI
+        from azure.cosmos import exceptions as cosmos_exceptions
         
-        # OpenAI APIキーの確認
-        api_key = os.getenv("OPENAI_API_KEY")
+        # 設定からAPIキーを取得
+        try:
+            settings = settings_container.read_item(item="app-settings", partition_key="app-settings")
+            api_key = settings.get("openaiApiKey")
+        except cosmos_exceptions.CosmosResourceNotFoundError:
+            api_key = None
+        
+        # 環境変数からもフォールバック
+        if not api_key:
+            api_key = os.getenv("OPENAI_API_KEY")
+        
         if not api_key:
             raise HTTPException(
                 status_code=503, 
@@ -171,7 +184,7 @@ async def suggest_recipe(ingredients: List[str]):
         client = OpenAI(api_key=api_key)
         
         # プロンプト作成
-        ingredients_text = "、".join(ingredients)
+        ingredients_text = "、".join(request.ingredients)
         prompt = f"""以下の材料を使ったレシピを提案してください。
 
 材料: {ingredients_text}

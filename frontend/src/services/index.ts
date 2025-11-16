@@ -11,7 +11,7 @@ export const recipeService = {
   toggleFavorite: (id: string, isFavorite: boolean) => api.patch(`/recipes/${id}/favorite`, null, { params: { is_favorite: isFavorite } }),
   recordCooking: (id: string) => api.post(`/recipes/${id}/cook`),
   importFromUrl: (url: string) => api.post('/recipes/import', null, { params: { url } }),
-  suggestByIngredients: (ingredients: string[]) => api.post('/recipes/suggest', null, { params: { ingredients } }),
+  suggestByIngredients: (ingredients: string[]) => api.post('/recipes/suggest', { ingredients }),
   getRecommendations: (limit?: number) => api.get('/recipes/recommend', { params: { limit } }),
   rebuildIndex: () => api.post('/recipes/embeddings/rebuild'),
 };
@@ -55,8 +55,8 @@ export const authService = {
 
 // 設定API
 export const settingsService = {
-  get: () => api.get<{ theme: string; soundEnabled?: boolean; soundVolume?: number; soundType?: string }>('/settings'),
-  update: (settings: { theme?: string; soundEnabled?: boolean; soundVolume?: number; soundType?: string }) => api.put('/settings', settings),
+  get: () => api.get<{ theme: string; soundEnabled?: boolean; soundVolume?: number; soundType?: string; openaiApiKey?: string }>('/settings'),
+  update: (settings: { theme?: string; soundEnabled?: boolean; soundVolume?: number; soundType?: string; openaiApiKey?: string }) => api.put('/settings', settings),
 };
 
 // 記録API

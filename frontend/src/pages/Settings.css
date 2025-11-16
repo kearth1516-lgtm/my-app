@@ -286,6 +286,91 @@ input:disabled + .toggle-slider {
   cursor: not-allowed;
 }
 
+/* API Key設定 */
+.api-key-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.api-key-input-group {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.api-key-input {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--theme-text-color, white);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.api-key-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.api-key-input:focus {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.toggle-visibility-btn {
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  color: var(--theme-text-color, white);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-visibility-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.save-api-key-btn {
+  padding: 12px 24px;
+  background: white;
+  color: var(--theme-primary, #667eea);
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  align-self: flex-start;
+}
+
+.save-api-key-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.save-api-key-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.api-key-note {
+  color: var(--theme-text-alpha, rgba(255, 255, 255, 0.8));
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 10px 0 0 0;
+}
+
+.api-key-note a {
+  color: white;
+  text-decoration: underline;
+}
+
 .saving-indicator {
   position: fixed;
   bottom: 100px;
