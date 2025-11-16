@@ -123,12 +123,15 @@ class RecipeRecommendationEngine:
         """
         container = get_recipes_container()
         
-        # 全レシピを取得してtimesCookedでソート
-        query = "SELECT * FROM c ORDER BY c.timesCooked DESC"
+        # 全レシピを取得（ORDER BYは使用不可）
+        query = "SELECT * FROM c"
         recipes = list(container.query_items(
             query=query,
             enable_cross_partition_query=True
         ))
+        
+        # Pythonでtimes Cookedでソート
+        recipes.sort(key=lambda x: x.get("timesCooked", 0), reverse=True)
         
         return recipes[:n]
     

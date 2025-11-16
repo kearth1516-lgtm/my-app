@@ -132,6 +132,107 @@ async def create_recipe(recipe: RecipeCreate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/{recipe_id}")
+async def get_recipe(recipe_id: str):
+    """レシピ詳細取得"""
+    try:
+        container = get_recipes_container()
+        recipe = container.read_item(item=recipe_id, partition_key=recipe_id)
+        return {"data": recipe}
+    except Exception as e:
+        if "404" in str(e):
+            raise HTTPException(status_code=404, detail="Recipe not found")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/{recipe_id}")
+async def update_recipe(recipe_id: str, update: RecipeUpdate):
+    """レシピ更新"""
+    try:
+        container = get_recipes_container()
+        
+        # 既存のレシピを取得
+        existing_recipe = container.read_item(item=recipe_id, partition_key=recipe_id)
+        
+        # 更新
+        if update.name is not None:
+            existing_recipe["name"] = update.name
+        if update.ingredients is not None:
+            existing_recipe["ingredients"] = update.ingredients
+        if update.steps is not None:
+            existing_recipe["steps"] = update.steps
+        if update.cookingTime is not None:
+            existing_recipe["cookingTime"] = update.cookingTime
+        if update.source is not None:
+            existing_recipe["source"] = update.source
+        if update.tags is not None:
+            existing_recipe["tags"] = update.tags
+        if update.isFavorite is not None:
+            existing_recipe["isFavorite"] = update.isFavorite
+        
+        container.replace_item(item=recipe_id, body=existing_recipe)
+        
+        # ベクトルストアを更新
+        try:
+            vector_store = get_vector_store()
+            vector_store.add_recipe(recipe_id, existing_recipe)
+        except Exception as ve:
+            print(f"Warning: Failed to update recipe in vector store: {ve}")
+        
+        return {"data": existing_recipe}
+    except Exception as e:
+        if "404" in str(e):
+            raise HTTPException(status_code=404, detail="Recipe not found")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/{recipe_id}")
+async def delete_recipe(recipe_id: str):
+    """レシピ削除"""
+    try:
+        container = get_recipes_container()
+        container.delete_item(item=recipe_id, partition_key=recipe_id)
+        
+        # ベクトルストアから削除
+        try:
+            vector_store = get_vector_store()
+            vector_store.delete_recipe(recipe_id)
+        except Exception as ve:
+            print(f"Warning: Failed to delete recipe from vector store: {ve}")
+        
+        return {"message": "Recipe deleted successfully"}
+    except Exception as e:
+        if "404" in str(e):
+            raise HTTPException(status_code=404, detail="Recipe not found")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/{recipe_id}/cook")
+async def record_cooking(recipe_id: str):
+    """調理記録（回数をインクリメント）"""
+    try:
+        container = get_recipes_container()
+        recipe = container.read_item(item=recipe_id, partition_key=recipe_id)
+        recipe["timesCooked"] = recipe.get("timesCooked", 0) + 1
+        container.replace_item(item=recipe_id, body=recipe)
+        return {"data": recipe}
+    except Exception as e:
+        if "404" in str(e):
+            raise HTTPException(status_code=404, detail="Recipe not found")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# お気に入り切り替え
+@router.patch("/{recipe_id}/favorite")
+async def toggle_favorite(recipe_id: str, is_favorite: bool):
+    """お気に入り切り替え"""
+    try:
+        container = get_recipes_container()
+        recipe = container.read_item(item=recipe_id, partition_key=recipe_id)
+        recipe["isFavorite"] = is_favorite
+        container.replace_item(item=recipe_id, body=recipe)
+        return {"data": recipe}
+    except Exception as e:
+        if "404" in str(e):
+            raise HTTPException(status_code=404, detail="Recipe not found")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # 外部サイトからレシピ取り込み
 @router.post("/import")
 async def import_recipe(url: str):
@@ -271,104 +372,3 @@ async def rebuild_embeddings():
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"インデックスの再構築に失敗しました: {str(e)}")
-
-@router.get("/{recipe_id}")
-async def get_recipe(recipe_id: str):
-    """レシピ詳細取得"""
-    try:
-        container = get_recipes_container()
-        recipe = container.read_item(item=recipe_id, partition_key=recipe_id)
-        return {"data": recipe}
-    except Exception as e:
-        if "404" in str(e):
-            raise HTTPException(status_code=404, detail="Recipe not found")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.put("/{recipe_id}")
-async def update_recipe(recipe_id: str, update: RecipeUpdate):
-    """レシピ更新"""
-    try:
-        container = get_recipes_container()
-        
-        # 既存のレシピを取得
-        existing_recipe = container.read_item(item=recipe_id, partition_key=recipe_id)
-        
-        # 更新
-        if update.name is not None:
-            existing_recipe["name"] = update.name
-        if update.ingredients is not None:
-            existing_recipe["ingredients"] = update.ingredients
-        if update.steps is not None:
-            existing_recipe["steps"] = update.steps
-        if update.cookingTime is not None:
-            existing_recipe["cookingTime"] = update.cookingTime
-        if update.source is not None:
-            existing_recipe["source"] = update.source
-        if update.tags is not None:
-            existing_recipe["tags"] = update.tags
-        if update.isFavorite is not None:
-            existing_recipe["isFavorite"] = update.isFavorite
-        
-        container.replace_item(item=recipe_id, body=existing_recipe)
-        
-        # ベクトルストアを更新
-        try:
-            vector_store = get_vector_store()
-            vector_store.add_recipe(recipe_id, existing_recipe)
-        except Exception as ve:
-            print(f"Warning: Failed to update recipe in vector store: {ve}")
-        
-        return {"data": existing_recipe}
-    except Exception as e:
-        if "404" in str(e):
-            raise HTTPException(status_code=404, detail="Recipe not found")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.delete("/{recipe_id}")
-async def delete_recipe(recipe_id: str):
-    """レシピ削除"""
-    try:
-        container = get_recipes_container()
-        container.delete_item(item=recipe_id, partition_key=recipe_id)
-        
-        # ベクトルストアから削除
-        try:
-            vector_store = get_vector_store()
-            vector_store.delete_recipe(recipe_id)
-        except Exception as ve:
-            print(f"Warning: Failed to delete recipe from vector store: {ve}")
-        
-        return {"message": "Recipe deleted successfully"}
-    except Exception as e:
-        if "404" in str(e):
-            raise HTTPException(status_code=404, detail="Recipe not found")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.post("/{recipe_id}/cook")
-async def record_cooking(recipe_id: str):
-    """調理記録（回数をインクリメント）"""
-    try:
-        container = get_recipes_container()
-        recipe = container.read_item(item=recipe_id, partition_key=recipe_id)
-        recipe["timesCooked"] = recipe.get("timesCooked", 0) + 1
-        container.replace_item(item=recipe_id, body=recipe)
-        return {"data": recipe}
-    except Exception as e:
-        if "404" in str(e):
-            raise HTTPException(status_code=404, detail="Recipe not found")
-        raise HTTPException(status_code=500, detail=str(e))
-
-# お気に入り切り替え
-@router.patch("/{recipe_id}/favorite")
-async def toggle_favorite(recipe_id: str, is_favorite: bool):
-    """お気に入り切り替え"""
-    try:
-        container = get_recipes_container()
-        recipe = container.read_item(item=recipe_id, partition_key=recipe_id)
-        recipe["isFavorite"] = is_favorite
-        container.replace_item(item=recipe_id, body=recipe)
-        return {"data": recipe}
-    except Exception as e:
-        if "404" in str(e):
-            raise HTTPException(status_code=404, detail="Recipe not found")
-        raise HTTPException(status_code=500, detail=str(e))
