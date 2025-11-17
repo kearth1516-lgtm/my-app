@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 import os
 
 router = APIRouter()
@@ -14,13 +13,12 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production-1
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7日間
 
-# パスワードハッシュ化
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# OAuth2設定
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 # 固定ユーザー設定（環境変数から取得、デフォルト値あり）
 FIXED_USERNAME = os.getenv("APP_USERNAME", "admin")
-FIXED_PASSWORD_HASH = pwd_context.hash(os.getenv("APP_PASSWORD", "password"))
+FIXED_PASSWORD = os.getenv("APP_PASSWORD", "password")  # プレーンテキストで保存
 
 class Token(BaseModel):
     access_token: str
@@ -31,10 +29,6 @@ class TokenData(BaseModel):
 
 class User(BaseModel):
     username: str
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """パスワード検証"""
-    return pwd_context.verify(plain_password, hashed_password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     """JWTトークン生成"""
@@ -72,7 +66,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     """ログイン"""
     # 固定ユーザー認証
-    if form_data.username != FIXED_USERNAME or not verify_password(form_data.password, FIXED_PASSWORD_HASH):
+    if form_data.username != FIXED_USERNAME or form_data.password != FIXED_PASSWORD:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="ユーザー名またはパスワードが正しくありません",
