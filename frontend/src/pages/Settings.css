@@ -359,6 +359,25 @@ input:disabled + .toggle-slider {
   transform: none;
 }
 
+.logout-button {
+  padding: 12px 24px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  align-self: flex-start;
+}
+
+.logout-button:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
 .api-key-note {
   color: var(--theme-text-alpha, rgba(255, 255, 255, 0.8));
   font-size: 0.85rem;

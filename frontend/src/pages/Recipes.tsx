@@ -160,9 +160,10 @@ function Recipes() {
           <button className="ai-button" onClick={() => setIsAiSuggestModalOpen(true)}>
             ✨ AI提案
           </button>
-          <button className="recommend-button" onClick={handleGetRecommendations}>
+          {/* RAG機能は無効化（メモリ制約のため） */}
+          {/* <button className="recommend-button" onClick={handleGetRecommendations}>
             🔮 おすすめレシピ
-          </button>
+          </button> */}
         </div>
       </div>
 

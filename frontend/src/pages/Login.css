@@ -1,0 +1,129 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--theme-primary, #8b5cf6) 0%, var(--theme-primary-dark, #7c3aed) 100%);
+  padding: 20px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.login-card h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+
+.login-description {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 0.95rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.form-group input {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--theme-primary, #8b5cf6);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.error-message {
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  padding: 12px;
+  color: #c00;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.login-button {
+  background: linear-gradient(135deg, var(--theme-primary, #8b5cf6) 0%, var(--theme-primary-dark, #7c3aed) 100%);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+}
+
+.login-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-note {
+  margin-top: 30px;
+  padding: 15px;
+  background: #f9fafb;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.login-note p {
+  margin: 5px 0;
+}
+
+.login-note code {
+  background: #e5e7eb;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.note-small {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 10px;
+}

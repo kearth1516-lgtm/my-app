@@ -323,6 +323,25 @@ function Settings() {
           </div>
         </section>
 
+        <section className="settings-section">
+          <h2>🔐 アカウント</h2>
+          <p className="section-description">ログアウトしてアカウントを切り替えます</p>
+          
+          <div className="api-key-settings">
+            <div className="setting-row">
+              <button
+                className="logout-button"
+                onClick={() => {
+                  localStorage.removeItem('access_token');
+                  window.location.href = '/login';
+                }}
+              >
+                🚪 ログアウト
+              </button>
+            </div>
+          </div>
+        </section>
+
         {saving && (
           <div className="saving-indicator">
             保存中...

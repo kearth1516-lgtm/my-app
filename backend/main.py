@@ -1,14 +1,30 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 import os
+from jose import JWTError, jwt
 
 # データベース初期化
 import database
 
 # ルーター
 from routers import auth, recipes, timers, fashion, home, upload, settings, records
+
+# 認証設定
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production-123456789")
+ALGORITHM = "HS256"
+
+# 認証不要なパス
+PUBLIC_PATHS = [
+    "/",
+    "/health",
+    "/docs",
+    "/openapi.json",
+    "/api/auth/login",
+    "/uploads",  # 静的ファイル
+]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -23,6 +39,36 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan
 )
+
+# 認証ミドルウェア
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    """全リクエストで認証チェック"""
+    # 公開パスはスキップ
+    if any(request.url.path.startswith(path) for path in PUBLIC_PATHS):
+        return await call_next(request)
+    
+    # Authorizationヘッダーをチェック
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "認証が必要です"},
+        )
+    
+    token = auth_header.split(" ")[1]
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if not username:
+            raise JWTError()
+    except JWTError:
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "無効なトークンです"},
+        )
+    
+    return await call_next(request)
 
 # CORS設定
 app.add_middleware(
