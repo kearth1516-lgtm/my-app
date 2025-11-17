@@ -19,6 +19,8 @@ TAGS_CONTAINER = "tags"
 SETTINGS_CONTAINER = "settings"
 RECORDS_CONTAINER = "records"
 RECIPES_CONTAINER = "recipes"
+POMODORO_SESSIONS_CONTAINER = "pomodoro_sessions"
+TODOS_CONTAINER = "todos"
 
 # Initialize Cosmos Client
 cosmos_client = CosmosClient(COSMOS_ENDPOINT, COSMOS_KEY)
@@ -30,13 +32,15 @@ tags_container = None
 settings_container = None
 records_container = None
 recipes_container = None
+pomodoro_sessions_container = None
+todos_container = None
 
 
 def initialize_database():
     """
     Initialize Cosmos DB database and containers
     """
-    global database, timers_container, tags_container, settings_container, records_container, recipes_container
+    global database, timers_container, tags_container, settings_container, records_container, recipes_container, pomodoro_sessions_container, todos_container
     
     try:
         # Create database if it doesn't exist
@@ -77,6 +81,20 @@ def initialize_database():
             partition_key=PartitionKey(path="/id")
         )
         print(f"Container '{RECIPES_CONTAINER}' initialized")
+        
+        # Create pomodoro_sessions container
+        pomodoro_sessions_container = database.create_container_if_not_exists(
+            id=POMODORO_SESSIONS_CONTAINER,
+            partition_key=PartitionKey(path="/id")
+        )
+        print(f"Container '{POMODORO_SESSIONS_CONTAINER}' initialized")
+        
+        # Create todos container
+        todos_container = database.create_container_if_not_exists(
+            id=TODOS_CONTAINER,
+            partition_key=PartitionKey(path="/id")
+        )
+        print(f"Container '{TODOS_CONTAINER}' initialized")
         
         # Initialize default settings if not exists
         initialize_default_settings()
@@ -151,3 +169,13 @@ def get_records_container():
 def get_recipes_container():
     """Get recipes container reference"""
     return recipes_container
+
+
+def get_pomodoro_sessions_container():
+    """Get pomodoro sessions container reference"""
+    return pomodoro_sessions_container
+
+
+def get_todos_container():
+    """Get todos container reference"""
+    return todos_container

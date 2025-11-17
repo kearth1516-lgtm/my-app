@@ -10,7 +10,7 @@ from jose import JWTError, jwt
 import database
 
 # ルーター
-from routers import auth, recipes, timers, fashion, home, upload, settings, records
+from routers import auth, recipes, timers, fashion, home, upload, settings, records, pomodoro, todos
 
 # 認証設定
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production-123456789")
@@ -89,6 +89,8 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(recipes.router, prefix="/api/recipes", tags=["recipes"])
 app.include_router(timers.router, prefix="/api/timers", tags=["timers"])
+app.include_router(pomodoro.router, prefix="/api/pomodoro", tags=["pomodoro"])
+app.include_router(todos.router, prefix="/api", tags=["todos"])
 app.include_router(records.router)
 app.include_router(fashion.router, prefix="/api/fashion", tags=["fashion"])
 app.include_router(home.router, prefix="/api/home", tags=["home"])

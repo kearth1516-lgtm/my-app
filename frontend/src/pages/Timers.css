@@ -304,7 +304,8 @@
 }
 
 .btn-start,
-.btn-stop {
+.btn-stop,
+.btn-pomodoro {
   flex: 1;
   padding: 12px;
   border: none;
@@ -332,6 +333,20 @@
 .btn-stop:hover {
   background: var(--theme-danger, #da190b);
   filter: brightness(0.9);
+}
+
+.btn-pomodoro {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  color: white;
+  font-size: 1.2rem;
+  padding: 10px 12px;
+  min-width: 60px;
+  flex: 0 0 auto;
+}
+
+.btn-pomodoro:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
 }
 
 .timer-stats {

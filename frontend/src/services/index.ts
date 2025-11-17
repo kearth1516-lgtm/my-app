@@ -1,5 +1,13 @@
 import api from './api';
 import type { Recipe, Timer, FashionItem, DailyOutfit, HomeImage, TimerRecord } from '../types';
+import { pomodoroService } from './pomodoro';
+import { todoService } from './todos';
+
+// ポモドーロAPI（エクスポート）
+export { pomodoroService };
+
+// TodosAPI（エクスポート）
+export { todoService };
 
 // レシピAPI
 export const recipeService = {

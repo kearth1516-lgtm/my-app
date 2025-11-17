@@ -10,6 +10,7 @@ import EditTimerModal from '../components/EditTimerModal';
 import ConfirmModal from '../components/ConfirmModal';
 import TimerRunning from '../components/TimerRunning';
 import SaveRecordModal from '../components/SaveRecordModal';
+import PomodoroTimer from '../components/PomodoroTimer';
 import './Timers.css';
 
 function Timers() {
@@ -22,6 +23,11 @@ function Timers() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [pomodoroModal, setPomodoroModal] = useState<{
+    isOpen: boolean;
+    timerId: string | null;
+    timerName: string;
+  }>({ isOpen: false, timerId: null, timerName: '' });
   const [saveRecordModal, setSaveRecordModal] = useState<{
     isOpen: boolean;
     timerId: string | null;
@@ -477,9 +483,22 @@ function Timers() {
                           停止
                         </button>
                       ) : (
-                        <button className="btn-start" onClick={() => handleStartTimer(timer)}>
-                          開始
-                        </button>
+                        <>
+                          <button className="btn-start" onClick={() => handleStartTimer(timer)}>
+                            開始
+                          </button>
+                          <button 
+                            className="btn-pomodoro"
+                            onClick={() => setPomodoroModal({ 
+                              isOpen: true, 
+                              timerId: timer.id!, 
+                              timerName: timer.name 
+                            })}
+                            title="ポモドーロタイマー"
+                          >
+                            🍅
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -573,9 +592,22 @@ function Timers() {
                       停止
                     </button>
                   ) : (
-                    <button className="btn-start" onClick={() => handleStartTimer(timer)}>
-                      開始
-                    </button>
+                    <>
+                      <button className="btn-start" onClick={() => handleStartTimer(timer)}>
+                        開始
+                      </button>
+                      <button 
+                        className="btn-pomodoro"
+                        onClick={() => setPomodoroModal({ 
+                          isOpen: true, 
+                          timerId: timer.id!, 
+                          timerName: timer.name 
+                        })}
+                        title="ポモドーロタイマー"
+                      >
+                        🍅
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -642,12 +674,20 @@ function Timers() {
       <ConfirmModal
         isOpen={timerCompleteModal.isOpen}
         title="⏰ タイマー終了"
-        message="お疲れ様でした！"
+        message="お疲れ様でした!"
         confirmText="OK"
         cancelText="続ける"
         onConfirm={handleTimerCompleteConfirm}
         onCancel={handleTimerCompleteCancel}
       />
+
+      {pomodoroModal.isOpen && pomodoroModal.timerId && (
+        <PomodoroTimer
+          timerId={pomodoroModal.timerId}
+          timerName={pomodoroModal.timerName}
+          onClose={() => setPomodoroModal({ isOpen: false, timerId: null, timerName: '' })}
+        />
+      )}
     </div>
   );
 }
