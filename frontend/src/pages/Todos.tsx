@@ -33,7 +33,23 @@ function Todos() {
         priority: filterPriority || undefined,
         completed: filterCompleted,
       });
-      setTodos(response.data.data);
+      
+      // フロントエンド側でソート（未完了タスク優先、締切が近い順）
+      const sortedTodos = response.data.data.sort((a, b) => {
+        // 完了状態でソート（未完了が先）
+        if (a.completed !== b.completed) {
+          return a.completed ? 1 : -1;
+        }
+        // 締切でソート（早い順）
+        if (a.dueDate && b.dueDate) {
+          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        }
+        if (a.dueDate) return -1;
+        if (b.dueDate) return 1;
+        return 0;
+      });
+      
+      setTodos(sortedTodos);
     } catch (error) {
       console.error('Failed to load todos:', error);
     } finally {

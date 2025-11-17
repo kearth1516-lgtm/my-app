@@ -79,8 +79,8 @@ async def get_todos(
         if completed is not None:
             query += f" AND c.completed = {str(completed).lower()}"
         
-        # 締切でソート（未完了タスクを優先、締切が近い順）
-        query += " ORDER BY c.completed ASC, c.dueDate ASC"
+        # 注: ORDER BYは複合インデックスが必要なため、フロントエンド側でソート
+        # query += " ORDER BY c.completed ASC, c.dueDate ASC"
         
         todos = list(container.query_items(
             query=query,
