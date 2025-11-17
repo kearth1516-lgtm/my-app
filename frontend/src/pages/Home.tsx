@@ -255,6 +255,10 @@ function Home() {
           <div className="menu-icon">🍳</div>
           <div className="menu-label">レシピ</div>
         </a>
+        <a href="/todos" className="menu-item">
+          <div className="menu-icon">📝</div>
+          <div className="menu-label">やることリスト</div>
+        </a>
         <a href="/fashion" className="menu-item">
           <div className="menu-icon">👔</div>
           <div className="menu-label">ファッション</div>

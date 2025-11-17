@@ -6,6 +6,7 @@ import Records from './pages/Records';
 import Recipes from './pages/Recipes';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
+import Todos from './pages/Todos';
 import { initializeTheme, applyTheme } from './utils/theme';
 import { settingsService } from './services';
 import './App.css';
@@ -44,6 +45,7 @@ function App() {
         <Route path="/timers" element={<PrivateRoute><Timers /></PrivateRoute>} />
         <Route path="/records" element={<PrivateRoute><Records /></PrivateRoute>} />
         <Route path="/recipes" element={<PrivateRoute><Recipes /></PrivateRoute>} />
+        <Route path="/todos" element={<PrivateRoute><Todos /></PrivateRoute>} />
         <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
         <Route path="/fashion" element={<PrivateRoute><div style={{ padding: '20px', textAlign: 'center' }}>ファッションページ（準備中）</div></PrivateRoute>} />
       </Routes>
